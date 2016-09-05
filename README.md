@@ -1,6 +1,13 @@
 # MNUpdateAPK
 Android APK 版本更新的下载和安装
 
+##功能：
+    1：下载APK
+    2：安装APK
+    
+##截图:
+![image](https://github.com/maning0303/MNUpdateAPK/blob/master/screenshots/001.gif)
+
 
 ## 如何添加
 ###Gradle添加：
