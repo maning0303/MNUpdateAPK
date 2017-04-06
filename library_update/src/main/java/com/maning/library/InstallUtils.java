@@ -4,7 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,6 +26,7 @@ import java.util.TimerTask;
  */
 public class InstallUtils {
 
+
     //任务定时器
     private Timer mTimer;
     //定时任务
@@ -35,7 +41,9 @@ public class InstallUtils {
     private String savePath;
     private String saveName;
     private DownloadCallBack downloadCallBack;
-    private File saveFile;
+    private static File saveFile;
+
+    private boolean isComplete = false;
 
 
     public interface DownloadCallBack {
@@ -48,12 +56,12 @@ public class InstallUtils {
         void onFail(Exception e);
     }
 
-    public InstallUtils(Context context, String httpUrl, String savePath, String saveName, DownloadCallBack downloadCallBack) {
+    public InstallUtils(Context context, String httpUrl, String saveName, DownloadCallBack downloadCallBack) {
         this.context = context;
         this.httpUrl = httpUrl;
-        this.savePath = savePath;
         this.saveName = saveName;
         this.downloadCallBack = downloadCallBack;
+        this.savePath = getCachePath(this.context);
     }
 
 
@@ -106,12 +114,14 @@ public class InstallUtils {
                             fileCurrentLength = current;
                         }
                     }
+                    isComplete = true;
                     //下载完成
                     ((Activity) context).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (downloadCallBack != null) {
                                 downloadCallBack.onComplete(saveFile.getPath());
+                                downloadCallBack = null;
                             }
                         }
                     });
@@ -122,6 +132,7 @@ public class InstallUtils {
                         public void run() {
                             if (downloadCallBack != null) {
                                 downloadCallBack.onFail(e);
+                                downloadCallBack = null;
                             }
                         }
                     });
@@ -152,7 +163,9 @@ public class InstallUtils {
                     @Override
                     public void run() {
                         if (downloadCallBack != null) {
-                            downloadCallBack.onLoading(fileLength, fileCurrentLength);
+                            if (!isComplete) {
+                                downloadCallBack.onLoading(fileLength, fileCurrentLength);
+                            }
                         }
                     }
                 });
@@ -170,17 +183,47 @@ public class InstallUtils {
             mTask = null;
             mTimer = null;
         }
-        if (downloadCallBack != null) {
-            downloadCallBack = null;
+    }
+
+    public static void installAPK(Context context, String filePath, String providerAuthoritiesName) {
+        try {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            File apkFile = new File(filePath);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Uri contentUri = FileProvider.getUriForFile(context, providerAuthoritiesName, apkFile);
+                intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+            } else {
+                intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+            }
+            context.startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(context, "安装APK失败:" + e.toString(), Toast.LENGTH_SHORT).show();
+            Log.e("InstallUtils", "安装APK失败:" + e.toString());
         }
     }
 
-    public static void installAPK(Context context, String filePath) {
-        Intent intent = new Intent();
-        intent.setAction(android.content.Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse("file://" + filePath), "application/vnd.android.package-archive");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+
+    /**
+     * 获取app缓存路径    SDCard/Android/data/你的应用的包名/cache
+     *
+     * @param context
+     * @return
+     */
+    public String getCachePath(Context context) {
+        String cachePath;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            //外部存储可用
+            cachePath = context.getExternalCacheDir().getPath();
+        } else {
+            //外部存储不可用
+            cachePath = context.getCacheDir().getPath();
+        }
+        Log.i("InstallUtils", "cachePath:" + cachePath);
+        return cachePath;
     }
 
 }
