@@ -25,7 +25,7 @@ Android APK 版本更新的下载和安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:v1.0.0'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.0.1'
 	}
 ```
 
