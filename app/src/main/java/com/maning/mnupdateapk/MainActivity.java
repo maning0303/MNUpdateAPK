@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.maning.updatelibrary.InstallUtils;
@@ -41,7 +42,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(String path) {
                 Log.i(TAG, "InstallUtils---onComplete:" + path);
-                InstallUtils.installAPK(context, path, "com.maning.mnupdateapk.fileProvider");
+                InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+                    @Override
+                    public void onComplete() {
+                        Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFail(Exception e) {
+                        Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
                 numberProgressBar.setProgress(100);
             }
 

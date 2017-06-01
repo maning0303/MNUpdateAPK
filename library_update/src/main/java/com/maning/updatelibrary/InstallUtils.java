@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,6 +51,13 @@ public class InstallUtils {
         void onComplete(String path);
 
         void onLoading(long total, long current);
+
+        void onFail(Exception e);
+    }
+
+    public interface InstallCallBack {
+
+        void onComplete();
 
         void onFail(Exception e);
     }
@@ -185,7 +191,7 @@ public class InstallUtils {
         }
     }
 
-    public static void installAPK(Context context, String filePath, String providerAuthoritiesName) {
+    public static void installAPK(Context context, String filePath, InstallCallBack callBack) {
         try {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
@@ -193,14 +199,19 @@ public class InstallUtils {
             File apkFile = new File(filePath);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                Uri contentUri = FileProvider.getUriForFile(context, providerAuthoritiesName, apkFile);
+                Uri contentUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileProvider", apkFile);
                 intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
             } else {
                 intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
             }
             context.startActivity(intent);
+            if (callBack != null) {
+                callBack.onComplete();
+            }
         } catch (Exception e) {
-            Toast.makeText(context, "安装APK失败:" + e.toString(), Toast.LENGTH_SHORT).show();
+            if (callBack != null) {
+                callBack.onFail(e);
+            }
             Log.e("InstallUtils", "安装APK失败:" + e.toString());
         }
     }
