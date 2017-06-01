@@ -1,5 +1,5 @@
 # MNUpdateAPK
-Android APK 版本更新的下载和安装
+Android APK 版本更新的下载和安装,支持7.0安装
 [![](https://jitpack.io/v/maning0303/MNUpdateAPK.svg)](https://jitpack.io/#maning0303/MNUpdateAPK)
 
 ## 功能：
@@ -26,7 +26,7 @@ Android APK 版本更新的下载和安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.0.2'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.0.3'
 	}
 ```
 
@@ -35,50 +35,7 @@ Android APK 版本更新的下载和安装
 
 ## 使用方法:
 
-### 1:manifest中申明FileProvider：
-
-``` java
-
-    <manifest>
-        ...
-        <application>
-            ...
-            <provider
-                android:name="android.support.v4.content.FileProvider"
-                android:authorities="包名.fileprovider"
-                android:exported="false"
-                android:grantUriPermissions="true">
-                <meta-data
-                      android:name="android.support.FILE_PROVIDER_PATHS"
-                      android:resource="@xml/file_paths" />
-            </provider>
-            ...
-        </application>
-    </manifest>
-
-```
-
-### 2: res/xml中定义对外暴露的文件夹路径：
-
-``` java
-
-    <?xml version="1.0" encoding="utf-8"?>
-    <paths>
-
-        <!--升级-->
-        <external-cache-path
-            name="update_external_cache"
-            path="" />
-
-        <cache-path
-            name="update_cache"
-            path="" />
-
-    </paths>
-
-```
-
-### 3:代码使用
+### 1:代码使用
     
 ``` java
 
@@ -89,31 +46,40 @@ Android APK 版本更新的下载和安装
 
       //下载
       new InstallUtils(context, APK_URL, APK_NAME, new InstallUtils.DownloadCallBack() {
-                  @Override
-                  public void onStart() {
-                      Log.i(TAG, "InstallUtils---onStart");
-                      numberProgressBar.setProgress(0);
-                  }
+          @Override
+          public void onStart() {
+              Log.i(TAG, "InstallUtils---onStart");
+              numberProgressBar.setProgress(0);
+          }
 
+          @Override
+          public void onComplete(String path) {
+              Log.i(TAG, "InstallUtils---onComplete:" + path);
+              InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
                   @Override
-                  public void onComplete(String path) {
-                      Log.i(TAG, "InstallUtils---onComplete:" + path);
-
-                      InstallUtils.installAPK(context, path, "com.maning.mnupdateapk.fileProvider");
-                      numberProgressBar.setProgress(100);
-                  }
-
-                  @Override
-                  public void onLoading(long total, long current) {
-                      Log.i(TAG, "InstallUtils----onLoading:-----total:" + total + ",current:" + current);
-                      numberProgressBar.setProgress((int) (current * 100 / total));
+                  public void onComplete() {
+                      Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
                   }
 
                   @Override
                   public void onFail(Exception e) {
-                      Log.i(TAG, "InstallUtils---onFail:" + e.getMessage());
+                      Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
                   }
+              });
+              numberProgressBar.setProgress(100);
+          }
 
-              }).downloadAPK();
+          @Override
+          public void onLoading(long total, long current) {
+              Log.i(TAG, "InstallUtils----onLoading:-----total:" + total + ",current:" + current);
+              numberProgressBar.setProgress((int) (current * 100 / total));
+          }
+
+          @Override
+          public void onFail(Exception e) {
+              Log.i(TAG, "InstallUtils---onFail:" + e.getMessage());
+          }
+
+      }).downloadAPK();
       
 ``` 

@@ -3,11 +3,11 @@
 
     <!--升级-->
     <external-cache-path
-        name="update_external_cache"
+        name="mn_update_external_cache"
         path="" />
 
     <cache-path
-        name="update_cache"
+        name="mn_update_cache"
         path="" />
 
 </paths>
