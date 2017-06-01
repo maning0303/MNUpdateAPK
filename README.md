@@ -1,5 +1,6 @@
 # MNUpdateAPK
 Android APK 版本更新的下载和安装
+[![](https://jitpack.io/v/maning0303/MNUpdateAPK.svg)](https://jitpack.io/#maning0303/MNUpdateAPK)
 
 ## 功能：
     1：下载APK
@@ -25,7 +26,7 @@ Android APK 版本更新的下载和安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.0.1'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.0.2'
 	}
 ```
 
