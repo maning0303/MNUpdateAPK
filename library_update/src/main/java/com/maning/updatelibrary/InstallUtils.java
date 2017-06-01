@@ -1,4 +1,4 @@
-package com.maning.library;
+package com.maning.updatelibrary;
 
 import android.app.Activity;
 import android.content.Context;

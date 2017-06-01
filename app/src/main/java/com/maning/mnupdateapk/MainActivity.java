@@ -1,16 +1,13 @@
 package com.maning.mnupdateapk;
 
 import android.content.Context;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
-import com.maning.library.InstallUtils;
-
-import java.io.File;
+import com.maning.updatelibrary.InstallUtils;
 
 public class MainActivity extends AppCompatActivity {
 
