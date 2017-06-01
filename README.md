@@ -82,4 +82,11 @@ Android APK 版本更新的下载和安装,支持7.0安装
 
       }).downloadAPK();
       
-``` 
+```
+
+### 默认下载路径:
+``` java
+
+     /Android/data/包名/cache/
+
+ ```
