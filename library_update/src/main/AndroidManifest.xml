@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.maning.library">
+    package="com.maning.updatelibrary">
 
     <!--权限问题-->
     <uses-permission android:name="android.permission.INTERNET" />
