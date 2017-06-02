@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(String path) {
                 Log.i(TAG, "InstallUtils---onComplete:" + path);
-                InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+                InstallUtils.installAPK(context, path, getPackageName() + ".fileProvider", new InstallUtils.InstallCallBack() {
                     @Override
-                    public void onComplete() {
+                    public void onSuccess() {
                         Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
                     }
 
