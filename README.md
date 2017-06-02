@@ -26,11 +26,11 @@ Android APK 版本更新的下载和安装,支持7.0安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.0.3'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.0.5'
 	}
 ```
 
-## ***关于7.0适配具体查看library(已经在库中配置完成):
+## 使用步骤:
 ### 1:在Manifest.xml中添加配置
 ``` gradle
       <provider
@@ -61,33 +61,7 @@ Android APK 版本更新的下载和安装,支持7.0安装
         </paths>
 ```
 
-### 3:安装APK代码适配:
-``` java
-        public static void installAPK(Context context, String filePath) {
-            try {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                File apkFile = new File(filePath);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    //这里的authority和Manifest.xml中添加provider中的authorities保持一致
-                    Uri contentUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileProvider", apkFile);
-                    intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
-                } else {
-                    intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
-                }
-                context.startActivity(intent);
-            } catch (Exception e) {
-                Log.e("InstallUtils", "安装APK失败:" + e.toString());
-            }
-        }
-```
-
-
-## 使用方法:
-
-### 1:代码使用
+### 3:代码使用
     
 ``` java
 
@@ -96,20 +70,27 @@ Android APK 版本更新的下载和安装,支持7.0安装
       //下载后的APK的命名
       public static final String APK_NAME = "update";
 
-      //下载
       new InstallUtils(context, APK_URL, APK_NAME, new InstallUtils.DownloadCallBack() {
           @Override
           public void onStart() {
               Log.i(TAG, "InstallUtils---onStart");
-              numberProgressBar.setProgress(0);
+              tv_progress.setText("0%");
           }
 
           @Override
           public void onComplete(String path) {
               Log.i(TAG, "InstallUtils---onComplete:" + path);
-              InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+
+              /**
+               * 安装APK工具类
+               * @param context       上下文
+               * @param filePath      文件路径
+               * @param authorities   ---------Manifest中配置provider的authorities字段---------
+               * @param callBack      安装界面成功调起的回调
+               */
+              InstallUtils.installAPK(context, path, getPackageName() + ".fileProvider", new InstallUtils.InstallCallBack() {
                   @Override
-                  public void onComplete() {
+                  public void onSuccess() {
                       Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
                   }
 
@@ -118,13 +99,13 @@ Android APK 版本更新的下载和安装,支持7.0安装
                       Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
                   }
               });
-              numberProgressBar.setProgress(100);
+              tv_progress.setText("100%");
           }
 
           @Override
           public void onLoading(long total, long current) {
               Log.i(TAG, "InstallUtils----onLoading:-----total:" + total + ",current:" + current);
-              numberProgressBar.setProgress((int) (current * 100 / total));
+              tv_progress.setText((int) (current * 100 / total)+"%");
           }
 
           @Override
@@ -135,6 +116,9 @@ Android APK 版本更新的下载和安装,支持7.0安装
       }).downloadAPK();
       
 ```
+
+### 使用注意的地方:
+#### 安装APK的第三个参数authorities 必须和在Manifest 中配置的authorities一致
 
 ### 默认下载路径:
 ``` java
