@@ -30,7 +30,7 @@ Android APK 版本更新的下载和安装,支持7.0安装
 	}
 ```
 
-## 关于7.0适配(已经在库中配置完成):
+## ***关于7.0适配(已经在库中配置完成):
 ### 1:在Manifest.xml中添加配置
 ``` gradle
       <provider
@@ -63,7 +63,7 @@ Android APK 版本更新的下载和安装,支持7.0安装
 
 ### 3:安装APK代码适配:
 ``` java
-        public static void installAPK(Context context, String filePath, InstallCallBack callBack) {
+        public static void installAPK(Context context, String filePath) {
             try {
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
