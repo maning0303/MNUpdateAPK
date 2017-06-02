@@ -1,13 +1,13 @@
 package com.maning.mnupdateapk;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.maning.updatelibrary.InstallUtils;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Context context;
 
-    private NumberProgressBar numberProgressBar;
+    private TextView tv_progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         context = this;
 
-        numberProgressBar = (NumberProgressBar) findViewById(R.id.number_progress_bar);
+        tv_progress = (TextView) findViewById(R.id.tv_progress);
+
 
     }
 
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStart() {
                 Log.i(TAG, "InstallUtils---onStart");
-                numberProgressBar.setProgress(0);
+                tv_progress.setText("0%");
             }
 
             @Override
@@ -53,13 +54,13 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
-                numberProgressBar.setProgress(100);
+                tv_progress.setText("100%");
             }
 
             @Override
             public void onLoading(long total, long current) {
                 Log.i(TAG, "InstallUtils----onLoading:-----total:" + total + ",current:" + current);
-                numberProgressBar.setProgress((int) (current * 100 / total));
+                tv_progress.setText((int) (current * 100 / total)+"%");
             }
 
             @Override
