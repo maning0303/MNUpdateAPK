@@ -12,13 +12,14 @@ import com.maning.updatelibrary.InstallUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String APK_URL = "http://mobile.ac.qq.com/qqcomic_android.apk";
+    public static final String APK_URL = "http://download.fir.im/v2/app/install/56dd4bb7e75e2d27f2000046?download_token=e415c0fd1ac3b7abcb65ebc6603c59d9&source=update";
     public static final String APK_NAME = "update";
     private static final String TAG = "InstallUtils";
 
     private Context context;
 
     private TextView tv_progress;
+    private TextView tv_info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         context = this;
 
         tv_progress = (TextView) findViewById(R.id.tv_progress);
-
+        tv_info = (TextView) findViewById(R.id.tv_info);
 
     }
 
@@ -51,10 +52,11 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFail(Exception e) {
-                        Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
+                        tv_info.setText("安装失败:" + e.toString());
                     }
                 });
                 tv_progress.setText("100%");
+                tv_info.setText("下载成功");
             }
 
             @Override
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFail(Exception e) {
                 Log.i(TAG, "InstallUtils---onFail:" + e.getMessage());
+                tv_info.setText("下载失败:" + e.toString());
             }
 
         }).downloadAPK();

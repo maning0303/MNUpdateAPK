@@ -106,6 +106,21 @@ public class InstallUtils {
                     outputStream = new FileOutputStream(saveFile);
                     fileLength = connection.getContentLength();
 
+                    //判断fileLength大小
+                    if (fileLength <= 0) {
+                        //失败的地址
+                        ((Activity) context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (downloadCallBack != null) {
+                                    downloadCallBack.onFail(new Exception("下载地址异常"));
+                                    downloadCallBack = null;
+                                }
+                            }
+                        });
+                        return;
+                    }
+
                     //计时器
                     initTimer();
 
@@ -192,10 +207,11 @@ public class InstallUtils {
 
     /**
      * 安装APK工具类
-     * @param context       上下文
-     * @param filePath      文件路径
-     * @param authorities   Manifest中配置provider的authorities字段
-     * @param callBack      安装界面成功调起的回调
+     *
+     * @param context     上下文
+     * @param filePath    文件路径
+     * @param authorities Manifest中配置provider的authorities字段
+     * @param callBack    安装界面成功调起的回调
      */
     public static void installAPK(Context context, String filePath, String authorities, InstallCallBack callBack) {
         try {
@@ -240,5 +256,6 @@ public class InstallUtils {
         }
         return cachePath;
     }
+
 
 }

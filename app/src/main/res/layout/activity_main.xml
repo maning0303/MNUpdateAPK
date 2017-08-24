@@ -24,4 +24,15 @@
         android:textSize="50sp"
         />
 
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:text=""
+        android:textColor="#535353"
+        android:textSize="16sp"
+        />
+
 </LinearLayout>
