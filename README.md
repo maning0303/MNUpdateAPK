@@ -33,6 +33,13 @@ Android APK 版本更新的下载和安装,支持7.0安装
 ## 使用步骤:
 ### 1:在Manifest.xml中添加配置
 ``` gradle
+
+      <!--权限-->
+      <uses-permission android:name="android.permission.INTERNET"/>
+      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+      <!--provider 注册-->
       <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"
