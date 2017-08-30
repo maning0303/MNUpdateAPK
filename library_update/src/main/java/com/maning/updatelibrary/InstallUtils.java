@@ -139,6 +139,9 @@ public class InstallUtils {
                     ((Activity) context).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            //解决某些低版本安装失败的问题
+                            changeApkFileMode(saveFile);
+
                             if (downloadCallBack != null) {
                                 downloadCallBack.onComplete(saveFile.getPath());
                                 downloadCallBack = null;
@@ -255,6 +258,20 @@ public class InstallUtils {
             cachePath = context.getCacheDir().getPath();
         }
         return cachePath;
+    }
+
+    //参照：APK放到data/data/下面提示解析失败 (http://blog.csdn.net/lonely_fireworks/article/details/27693073)
+    private void changeApkFileMode(File file) {
+        try {
+            //apk放在缓存目录时，低版本安装提示权限错误，需要对父级目录和apk文件添加权限
+            String cmd1 = "chmod 777 " + file.getParent();
+            Runtime.getRuntime().exec(cmd1);
+
+            String cmd = "chmod 777 " + file.getAbsolutePath();
+            Runtime.getRuntime().exec(cmd);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
