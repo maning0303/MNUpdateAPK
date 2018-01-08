@@ -220,10 +220,10 @@ public class InstallUtils {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             File apkFile = new File(filePath);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                String authority = context.getPackageName() + ".fileProvider";
+                String authority = context.getPackageName() + ".updateFileProvider";
                 Uri contentUri = FileProvider.getUriForFile(context, authority, apkFile);
                 intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
             } else {
