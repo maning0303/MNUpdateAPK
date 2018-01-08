@@ -1,5 +1,5 @@
 # MNUpdateAPK
-Android APK 版本更新的下载和安装,支持7.0安装
+Android APK 版本更新的下载和安装,支持7.0，8.0安装
 [![](https://jitpack.io/v/maning0303/MNUpdateAPK.svg)](https://jitpack.io/#maning0303/MNUpdateAPK)
 
 ## 功能：
