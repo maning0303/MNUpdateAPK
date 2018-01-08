@@ -26,7 +26,7 @@ Android APK 版本更新的下载和安装,支持7.0安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.0.6'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.0'
 	}
 ```
 
@@ -36,44 +36,17 @@ Android APK 版本更新的下载和安装,支持7.0安装
 
       <!--权限-->
       <uses-permission android:name="android.permission.INTERNET"/>
-      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+      <!--8.0安装需要的权限-->
+      <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
-      <!--provider 注册-->
-      <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.fileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_provider" />
-       </provider>
 ```
 
-### 2:res/xml/file_provider.xml:
-``` java
-        <?xml version="1.0" encoding="utf-8"?>
-        <paths>
-
-            <!--升级-->
-            <external-cache-path
-                name="mn_update_external_cache"
-                path="" />
-
-            <cache-path
-                name="mn_update_cache"
-                path="" />
-
-        </paths>
-```
-
-### 3:代码使用
+### 2:代码使用
     
 ``` java
 
       //最新APK的下载地址
-      public static final String APK_URL = "http://mobile.ac.qq.com/qqcomic_android.apk";
+      public static final String APK_URL = "http://download.fir.im/v2/app/install/5a52e936ca87a8600e0002f9?download_token=cd8662357947f151de92975b46082ba6&source=update";
       //下载后的APK的命名
       public static final String APK_NAME = "update";
 
@@ -95,7 +68,7 @@ Android APK 版本更新的下载和安装,支持7.0安装
                * @param authorities   ---------Manifest中配置provider的authorities字段---------
                * @param callBack      安装界面成功调起的回调
                */
-              InstallUtils.installAPK(context, path, getPackageName() + ".fileProvider", new InstallUtils.InstallCallBack() {
+              InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
                   @Override
                   public void onSuccess() {
                       Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
@@ -124,15 +97,20 @@ Android APK 版本更新的下载和安装,支持7.0安装
       
 ```
 
-### 使用注意的地方:
-#### 安装APK的第三个参数authorities 必须和在Manifest 中配置的authorities一致
-
 ### 默认下载路径:
 ``` java
 
      /Android/data/包名/cache/
+     或者
+     /data/data/包名/cache/
 
 ```
+
+## 版本记录:
+##### 版本 V1.1.0:
+    1.7.0适配fileProvider内置，不需要在外部添加，更加方便
+    2.8.0适配权限
+
 
 
 ## 推荐:

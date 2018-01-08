@@ -213,10 +213,9 @@ public class InstallUtils {
      *
      * @param context     上下文
      * @param filePath    文件路径
-     * @param authorities Manifest中配置provider的authorities字段
      * @param callBack    安装界面成功调起的回调
      */
-    public static void installAPK(Context context, String filePath, String authorities, InstallCallBack callBack) {
+    public static void installAPK(Context context, String filePath, InstallCallBack callBack) {
         try {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
