@@ -233,6 +233,8 @@ public class InstallUtils {
             if (callBack != null) {
                 callBack.onSuccess();
             }
+            //关闭当前
+            android.os.Process.killProcess(android.os.Process.myPid());
         } catch (Exception e) {
             if (callBack != null) {
                 callBack.onFail(e);

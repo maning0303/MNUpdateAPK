@@ -4,10 +4,10 @@
     <!--升级-->
     <external-cache-path
         name="mn_update_external_cache"
-        path="" />
+        path="." />
 
     <cache-path
         name="mn_update_cache"
-        path="" />
+        path="." />
 
 </paths>
