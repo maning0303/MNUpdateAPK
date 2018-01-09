@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/MNUpdateAPK.iml" filepath="$PROJECT_DIR$/MNUpdateAPK.iml" />
       <module fileurl="file://$PROJECT_DIR$/MNUpdateAPK-master.iml" filepath="$PROJECT_DIR$/MNUpdateAPK-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library_update/library_update.iml" filepath="$PROJECT_DIR$/library_update/library_update.iml" />
       <module fileurl="file://$PROJECT_DIR$/library_update/library_update.iml" filepath="$PROJECT_DIR$/library_update/library_update.iml" />
     </modules>
   </component>

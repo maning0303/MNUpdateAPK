@@ -1,5 +1,5 @@
 # MNUpdateAPK
-Android APK 版本更新的下载和安装,支持7.0，8.0安装
+Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 [![](https://jitpack.io/v/maning0303/MNUpdateAPK.svg)](https://jitpack.io/#maning0303/MNUpdateAPK)
 
 ## 功能：
@@ -26,7 +26,7 @@ Android APK 版本更新的下载和安装,支持7.0，8.0安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.0.9'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.2'
 	}
 ```
 
@@ -34,10 +34,13 @@ Android APK 版本更新的下载和安装,支持7.0，8.0安装
 ### 1:在Manifest.xml中添加配置
 ``` gradle
 
-      <!--权限-->
+      <!--网络权限问题-->
       <uses-permission android:name="android.permission.INTERNET"/>
       <!--8.0安装需要的权限-->
       <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+      <!--读写权限-->
+      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
 ```
 
@@ -54,7 +57,6 @@ Android APK 版本更新的下载和安装,支持7.0，8.0安装
           @Override
           public void onStart() {
               Log.i(TAG, "InstallUtils---onStart");
-              tv_progress.setText("0%");
           }
 
           @Override
@@ -79,13 +81,11 @@ Android APK 版本更新的下载和安装,支持7.0，8.0安装
                       Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
                   }
               });
-              tv_progress.setText("100%");
           }
 
           @Override
           public void onLoading(long total, long current) {
               Log.i(TAG, "InstallUtils----onLoading:-----total:" + total + ",current:" + current);
-              tv_progress.setText((int) (current * 100 / total)+"%");
           }
 
           @Override
@@ -107,10 +107,7 @@ Android APK 版本更新的下载和安装,支持7.0，8.0安装
 ```
 
 ## 版本记录:
-##### 版本 V1.0.9:
-    1.包引用方式改为implementation
-
-##### 版本 V1.0.8:
+##### 版本 V1.1.2:
     1.7.0适配fileProvider内置，不需要在外部添加，更加方便
     2.8.0适配权限
 
