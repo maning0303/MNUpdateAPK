@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tv_progress;
     private TextView tv_info;
+    private Button btnDownload;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         tv_progress = (TextView) findViewById(R.id.tv_progress);
         tv_info = (TextView) findViewById(R.id.tv_info);
+        btnDownload = (Button) findViewById(R.id.btnDownload);
 
         //判断是不是最新版本
         if (getVersionCode() > 1) {
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void download(View view) {
+        btnDownload.setClickable(false);
         new InstallUtils(context, APK_URL, APK_NAME, new InstallUtils.DownloadCallBack() {
             @Override
             public void onStart() {
@@ -66,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 tv_progress.setText("100%");
                 tv_info.setText("下载成功");
+                btnDownload.setClickable(true);
             }
 
             @Override
@@ -78,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFail(Exception e) {
                 Log.i(TAG, "InstallUtils---onFail:" + e.getMessage());
                 tv_info.setText("下载失败:" + e.toString());
+                btnDownload.setClickable(true);
             }
 
         }).downloadAPK();
