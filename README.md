@@ -67,7 +67,6 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
                * 安装APK工具类
                * @param context       上下文
                * @param filePath      文件路径
-               * @param authorities   ---------Manifest中配置provider的authorities字段---------
                * @param callBack      安装界面成功调起的回调
                */
               InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
