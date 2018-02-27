@@ -211,9 +211,9 @@ public class InstallUtils {
     /**
      * 安装APK工具类
      *
-     * @param context     上下文
-     * @param filePath    文件路径
-     * @param callBack    安装界面成功调起的回调
+     * @param context  上下文
+     * @param filePath 文件路径
+     * @param callBack 安装界面成功调起的回调
      */
     public static void installAPK(Context context, String filePath, InstallCallBack callBack) {
         try {
@@ -240,6 +240,18 @@ public class InstallUtils {
                 callBack.onFail(e);
             }
         }
+    }
+
+    /**
+     * 通过浏览器下载APK更新安装
+     *
+     * @param context    上下文
+     * @param httpUrlApk APK下载地址
+     */
+    public static void installAPKWithBrower(Context context, String httpUrlApk) {
+        Uri uri = Uri.parse(httpUrlApk);
+        Intent viewIntent = new Intent(Intent.ACTION_VIEW, uri);
+        context.startActivity(viewIntent);
     }
 
 
