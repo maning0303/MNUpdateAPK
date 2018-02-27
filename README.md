@@ -7,6 +7,8 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
     2：安装APK
     
 ## 截图:
+![](https://github.com/maning0303/MNUpdateAPK/raw/master/screenshots/002.png)
+##### gif 比较慢
 ![](https://github.com/maning0303/MNUpdateAPK/raw/master/screenshots/001.gif)
 
 

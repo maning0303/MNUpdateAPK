@@ -15,7 +15,7 @@ import com.maning.updatelibrary.InstallUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-//    public static final String APK_URL = "http://download.fir.im/v2/app/install/56dd4bb7e75e2d27f2000046?download_token=e415c0fd1ac3b7abcb65ebc6603c59d9&source=update";
+    //    public static final String APK_URL = "http://download.fir.im/v2/app/install/56dd4bb7e75e2d27f2000046?download_token=e415c0fd1ac3b7abcb65ebc6603c59d9&source=update";
     public static final String APK_URL = "http://download.fir.im/v2/app/install/5a52e936ca87a8600e0002f9?download_token=cd8662357947f151de92975b46082ba6&source=update";
     public static final String APK_NAME = "update";
     private static final String TAG = "InstallUtils";
@@ -44,6 +44,11 @@ public class MainActivity extends AppCompatActivity {
             tv_info.setText("当前版本有更新");
         }
 
+    }
+
+    public void download2(View view) {
+        //通过浏览器去下载APK
+        InstallUtils.installAPKWithBrower(this, APK_URL);
     }
 
     public void download(View view) {

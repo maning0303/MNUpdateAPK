@@ -18,6 +18,16 @@
             android:text="下载"
             android:textColor="#FFFFFF" />
 
+        <Button
+            android:layout_marginTop="10dp"
+            android:id="@+id/btnDownloadBrowser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:onClick="download2"
+            android:text="下载-浏览器下载安装"
+            android:textColor="#FFFFFF" />
+
         <TextView
             android:id="@+id/tv_progress"
             android:layout_width="wrap_content"
