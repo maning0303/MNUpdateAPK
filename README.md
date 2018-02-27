@@ -47,6 +47,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ```
 
 ### 2:代码使用
+#### 本地下载安装：
     
 ``` java
 
@@ -54,7 +55,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
       public static final String APK_URL = "http://download.fir.im/v2/app/install/5a52e936ca87a8600e0002f9?download_token=cd8662357947f151de92975b46082ba6&source=update";
       //下载后的APK的命名
       public static final String APK_NAME = "update";
-
+        
       new InstallUtils(context, APK_URL, APK_NAME, new InstallUtils.DownloadCallBack() {
           @Override
           public void onStart() {
@@ -97,6 +98,15 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
       }).downloadAPK();
       
 ```
+
+#### 浏览器下载安装：
+``` java
+
+     //通过浏览器去下载APK
+     InstallUtils.installAPKWithBrower(this, APK_URL);
+
+```
+
 
 ### 默认下载路径:
 ``` java
