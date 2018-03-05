@@ -7,7 +7,7 @@ import android.support.v4.content.FileProvider;
  *     author : maning
  *     e-mail : xxx@xx
  *     time   : 2018/01/08
- *     desc   : 更新专用
+ *     desc   : 更新专用FileProvider
  *     version: 1.0
  * </pre>
  */

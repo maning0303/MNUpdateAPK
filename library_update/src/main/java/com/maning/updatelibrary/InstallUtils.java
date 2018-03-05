@@ -218,17 +218,19 @@ public class InstallUtils {
     public static void installAPK(Context context, String filePath, InstallCallBack callBack) {
         try {
             Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_VIEW);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setAction(Intent.ACTION_VIEW);
             File apkFile = new File(filePath);
+            Uri apkUri;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 String authority = context.getPackageName() + ".updateFileProvider";
-                Uri contentUri = FileProvider.getUriForFile(context, authority, apkFile);
-                intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+                apkUri = MNUpdateApkFileProvider.getUriForFile(context, authority, apkFile);
+                // 授予目录临时共享权限
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } else {
-                intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+                apkUri = Uri.fromFile(apkFile);
             }
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
             context.startActivity(intent);
             if (callBack != null) {
                 callBack.onSuccess();
