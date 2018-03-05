@@ -28,7 +28,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.3'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.4'
 	}
 ```
 
@@ -118,6 +118,9 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ```
 
 ## 版本记录:
+##### 版本 V1.1.4:
+    1.优化代码
+    
 ##### 版本 V1.1.3:
     1.修复上版本fileProvider内置设置问题
 
