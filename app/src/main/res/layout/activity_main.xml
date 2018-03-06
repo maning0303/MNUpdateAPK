@@ -13,13 +13,23 @@
             android:id="@+id/btnDownload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:background="@color/colorPrimary"
             android:onClick="download"
             android:text="下载"
             android:textColor="#FFFFFF" />
 
         <Button
-            android:layout_marginTop="10dp"
+            android:id="@+id/btnDownloadService"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@color/colorPrimary"
+            android:onClick="btnDownloadService"
+            android:text="IntentService下载"
+            android:textColor="#FFFFFF" />
+
+        <Button
             android:id="@+id/btnDownloadBrowser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

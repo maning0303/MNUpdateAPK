@@ -141,7 +141,6 @@ public class InstallUtils {
                         public void run() {
                             //解决某些低版本安装失败的问题
                             changeApkFileMode(saveFile);
-
                             if (downloadCallBack != null) {
                                 downloadCallBack.onComplete(saveFile.getPath());
                                 downloadCallBack = null;
