@@ -20,8 +20,6 @@
                 android:resource="@xml/mn_update_file_provider" />
         </provider>
 
-        <service android:name=".DownloadService" />
-
     </application>
 
 </manifest>

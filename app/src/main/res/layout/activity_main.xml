@@ -20,22 +20,21 @@
             android:textColor="#FFFFFF" />
 
         <Button
-            android:id="@+id/btnDownloadService"
+            android:id="@+id/btnDownloadBrowser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:background="@color/colorPrimary"
-            android:onClick="btnDownloadService"
-            android:text="IntentService下载"
+            android:onClick="download2"
+            android:text="下载-浏览器下载安装"
             android:textColor="#FFFFFF" />
 
         <Button
-            android:id="@+id/btnDownloadBrowser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
-            android:onClick="download2"
-            android:text="下载-浏览器下载安装"
+            android:onClick="otherPage"
+            android:text="其他页面"
             android:textColor="#FFFFFF" />
 
         <TextView
@@ -43,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="30dp"
             android:text="0%"
             android:textColor="#535353"
             android:textSize="50sp" />
@@ -53,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="30dp"
             android:text=""
             android:textColor="#535353"
             android:textSize="16sp" />

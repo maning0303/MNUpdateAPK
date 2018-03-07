@@ -38,7 +38,7 @@ public class InstallUtils {
     private String httpUrl;
     private String savePath;
     private String saveName;
-    private DownloadCallBack downloadCallBack;
+    private static DownloadCallBack downloadCallBack;
     private static File saveFile;
 
     private boolean isComplete = false;
@@ -65,8 +65,17 @@ public class InstallUtils {
         this.context = context;
         this.httpUrl = httpUrl;
         this.saveName = saveName;
-        this.downloadCallBack = downloadCallBack;
+        InstallUtils.downloadCallBack = downloadCallBack;
         this.savePath = getCachePath(this.context);
+    }
+
+    /**
+     * 设置监听
+     *
+     * @param downloadCallBack
+     */
+    public static void setDownloadCallBack(DownloadCallBack downloadCallBack) {
+        InstallUtils.downloadCallBack = downloadCallBack;
     }
 
 
