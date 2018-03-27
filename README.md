@@ -28,7 +28,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.4'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.5'
 	}
 ```
 
@@ -97,6 +97,30 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 
       }).downloadAPK();
       
+      
+      //设置下载监听
+      InstallUtils.setDownloadCallBack(new InstallUtils.DownloadCallBack() {
+                  @Override
+                  public void onStart() {
+                      
+                  }
+      
+                  @Override
+                  public void onComplete(String path) {
+      
+                  }
+      
+                  @Override
+                  public void onLoading(long total, long current) {
+      
+                  }
+      
+                  @Override
+                  public void onFail(Exception e) {
+      
+                  }
+              });
+      
 ```
 
 #### 浏览器下载安装：
@@ -118,6 +142,9 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ```
 
 ## 版本记录:
+##### 版本 V1.1.5:
+    1修复http302 重定向问题
+
 ##### 版本 V1.1.4:
     1.优化代码
     
