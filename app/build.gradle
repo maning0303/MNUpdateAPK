@@ -22,8 +22,11 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.2.0'
-    compile project(':library_update')
-    //gradle测试
-//    compile 'com.github.maning0303:MNUpdateAPK:V1.1.4'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile project(':library_update')
+
+
+    //gradle测试
+//    compile 'com.github.maning0303:MNUpdateAPK:V1.1.6'
 }
