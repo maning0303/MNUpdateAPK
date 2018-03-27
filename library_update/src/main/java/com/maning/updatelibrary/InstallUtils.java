@@ -42,6 +42,7 @@ public class InstallUtils {
     private static File saveFile;
 
     private boolean isComplete = false;
+    private boolean isHttp302 = false;  //是不是302重定向
 
 
     public interface DownloadCallBack {
@@ -81,6 +82,7 @@ public class InstallUtils {
 
     public void downloadAPK() {
         if (TextUtils.isEmpty(httpUrl)) {
+            downloadFail(new Exception("下载地址为空"));
             return;
         }
         saveFile = new File(savePath);
@@ -88,17 +90,15 @@ public class InstallUtils {
             boolean isMK = saveFile.mkdirs();
             if (!isMK) {
                 //创建失败
+                downloadFail(new Exception("创建文件夹失败"));
                 return;
             }
         }
-
         saveFile = new File(savePath + File.separator + saveName + ".apk");
 
-        if (downloadCallBack != null) {
-            //下载开始
-            downloadCallBack.onStart();
-        }
-
+        //开始下载
+        downloadStart();
+        //开启线程下载
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -108,25 +108,33 @@ public class InstallUtils {
                 try {
                     URL url = new URL(httpUrl);
                     connection = (HttpURLConnection) url.openConnection();
-                    connection.setConnectTimeout(10 * 1000);
-                    connection.setReadTimeout(10 * 1000);
+                    connection.setConnectTimeout(30 * 1000);
+                    connection.setReadTimeout(30 * 1000);
                     connection.connect();
+
+                    //判断是不是成功
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode < 200 || responseCode >= 300) {
+                        //302重定向问题
+                        if(responseCode == 302){
+                            String location = connection.getHeaderField("Location");
+                            downloadAlgin(location);
+                            return;
+                        }
+                        //失败的地址
+                        final String responseMessage = connection.getResponseMessage();
+                        downloadFail(new Exception(responseMessage));
+                        return;
+                    }
+
                     inputStream = connection.getInputStream();
                     outputStream = new FileOutputStream(saveFile);
                     fileLength = connection.getContentLength();
 
                     //判断fileLength大小
                     if (fileLength <= 0) {
-                        //失败的地址
-                        ((Activity) context).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (downloadCallBack != null) {
-                                    downloadCallBack.onFail(new Exception("下载地址异常"));
-                                    downloadCallBack = null;
-                                }
-                            }
-                        });
+                        //失败
+                        downloadFail(new Exception("下载失败"));
                         return;
                     }
 
@@ -145,29 +153,12 @@ public class InstallUtils {
                     }
                     isComplete = true;
                     //下载完成
-                    ((Activity) context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //解决某些低版本安装失败的问题
-                            changeApkFileMode(saveFile);
-                            if (downloadCallBack != null) {
-                                downloadCallBack.onComplete(saveFile.getPath());
-                                downloadCallBack = null;
-                            }
-                        }
-                    });
+                    downloadComplete();
                 } catch (final Exception e) {
                     e.printStackTrace();
-                    ((Activity) context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (downloadCallBack != null) {
-                                downloadCallBack.onFail(e);
-                                downloadCallBack = null;
-                            }
-                        }
-                    });
+                    downloadFail(e);
                 } finally {
+                    isHttp302 = false;
                     try {
                         if (inputStream != null)
                             inputStream.close();
@@ -183,6 +174,56 @@ public class InstallUtils {
             }
         }).start();
 
+    }
+
+    private void downloadAlgin(final String newHttp){
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                isHttp302 = true;
+                httpUrl = newHttp;
+                downloadAPK();
+            }
+        });
+    }
+
+    private void downloadStart() {
+        if(isHttp302){
+            return;
+        }
+        isHttp302 = false;
+        if (downloadCallBack != null) {
+            //下载开始
+            downloadCallBack.onStart();
+        }
+    }
+
+    private void downloadComplete() {
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                isHttp302 = false;
+                //解决某些低版本安装失败的问题
+                changeApkFileMode(saveFile);
+                if (downloadCallBack != null) {
+                    downloadCallBack.onComplete(saveFile.getPath());
+                    downloadCallBack = null;
+                }
+            }
+        });
+    }
+
+    private void downloadFail(final Exception exception) {
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                isHttp302 = false;
+                if (downloadCallBack != null) {
+                    downloadCallBack.onFail(exception);
+                    downloadCallBack = null;
+                }
+            }
+        });
     }
 
     private void initTimer() {
