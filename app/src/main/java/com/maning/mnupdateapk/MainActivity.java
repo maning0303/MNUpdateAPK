@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,10 +21,14 @@ import com.maning.updatelibrary.InstallUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-//    public static final String APK_URL = "http://download.fir.im/v2/app/install/56dd4bb7e75e2d27f2000046?download_token=e415c0fd1ac3b7abcb65ebc6603c59d9&source=update";
+    //    public static final String APK_URL = "http://download.fir.im/v2/app/install/56dd4bb7e75e2d27f2000046?download_token=e415c0fd1ac3b7abcb65ebc6603c59d9&source=update";
     public static final String APK_URL = "http://download.fir.im/v2/app/install/5a52e936ca87a8600e0002f9?download_token=cd8662357947f151de92975b46082ba6&source=update";
-//    public static final String APK_URL = "https://www.pgyer.com/apiv2/app/install?appKey=e6fcefdffc8c0ef2d7700e867f3b9685&_api_key=ae839fd4e088946dc307140042b97e17";
+    //    public static final String APK_URL = "https://www.pgyer.com/apiv2/app/install?appKey=e6fcefdffc8c0ef2d7700e867f3b9685&_api_key=ae839fd4e088946dc307140042b97e17";
     public static final String APK_NAME = "update";
+    public static final String APK_SAVE_PATH = Environment.getExternalStorageDirectory() + "/MNUpdateAPK";
+    ;
+
+
     private static final String TAG = "InstallUtils";
     private Context context;
 
@@ -62,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void download(View view) {
         btnDownload.setClickable(false);
-        new InstallUtils(context, APK_URL, APK_NAME, new InstallUtils.DownloadCallBack() {
+        new InstallUtils(context, APK_URL, APK_NAME, APK_SAVE_PATH, new InstallUtils.DownloadCallBack() {
             @Override
             public void onStart() {
                 Log.i(TAG, "InstallUtils---onStart");
@@ -70,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(String path) {
+            public void onComplete(final String path) {
                 Log.i(TAG, "InstallUtils---onComplete:" + path);
                 InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
                     @Override

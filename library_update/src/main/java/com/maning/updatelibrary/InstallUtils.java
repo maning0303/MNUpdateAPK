@@ -62,12 +62,37 @@ public class InstallUtils {
         void onFail(Exception e);
     }
 
+    /**
+     * 下载安装
+     * @param context   上下文
+     * @param httpUrl   下载地址
+     * @param saveName  保存的名字
+     * @param downloadCallBack  回调
+     */
     public InstallUtils(Context context, String httpUrl, String saveName, DownloadCallBack downloadCallBack) {
+        this(context,httpUrl,saveName,null,downloadCallBack);
+    }
+
+    /**
+     * 下载安装
+     * @param context   上下文
+     * @param httpUrl   下载地址
+     * @param saveName  保存的名字
+     * @param savePath 保存路径
+     * @param downloadCallBack  回调
+     */
+    public InstallUtils(Context context, String httpUrl, String saveName, String savePath, DownloadCallBack downloadCallBack) {
+        InstallUtils.downloadCallBack = downloadCallBack;
         this.context = context;
         this.httpUrl = httpUrl;
         this.saveName = saveName;
-        InstallUtils.downloadCallBack = downloadCallBack;
-        this.savePath = getCachePath(this.context);
+        this.savePath = savePath;
+        if(TextUtils.isEmpty(this.savePath)){
+            this.savePath = getCachePath(this.context);
+        }
+        if(TextUtils.isEmpty(this.saveName)){
+            this.saveName = "update";
+        }
     }
 
     /**
@@ -94,7 +119,11 @@ public class InstallUtils {
                 return;
             }
         }
-        saveFile = new File(savePath + File.separator + saveName + ".apk");
+        if(saveFile.getAbsolutePath().endsWith("/")){
+            saveFile = new File(savePath + saveName + ".apk");
+        }else{
+            saveFile = new File(savePath + File.separator + saveName + ".apk");
+        }
 
         //开始下载
         downloadStart();
@@ -152,6 +181,9 @@ public class InstallUtils {
                         }
                     }
                     isComplete = true;
+
+                    //睡一秒钟，延时通知下载完成，部分手机可能出现解析包异常问题
+                    Thread.sleep(1000);
                     //下载完成
                     downloadComplete();
                 } catch (final Exception e) {
@@ -267,7 +299,7 @@ public class InstallUtils {
     public static void installAPK(Context context, String filePath, InstallCallBack callBack) {
         try {
             Intent intent = new Intent();
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setAction(Intent.ACTION_VIEW);
             File apkFile = new File(filePath);
             Uri apkUri;
