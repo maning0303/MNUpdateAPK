@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -64,22 +62,24 @@ public class InstallUtils {
 
     /**
      * 下载安装
-     * @param context   上下文
-     * @param httpUrl   下载地址
-     * @param saveName  保存的名字
-     * @param downloadCallBack  回调
+     *
+     * @param context          上下文
+     * @param httpUrl          下载地址
+     * @param saveName         保存的名字
+     * @param downloadCallBack 回调
      */
     public InstallUtils(Context context, String httpUrl, String saveName, DownloadCallBack downloadCallBack) {
-        this(context,httpUrl,saveName,null,downloadCallBack);
+        this(context, httpUrl, saveName, null, downloadCallBack);
     }
 
     /**
      * 下载安装
-     * @param context   上下文
-     * @param httpUrl   下载地址
-     * @param saveName  保存的名字
-     * @param savePath 保存路径
-     * @param downloadCallBack  回调
+     *
+     * @param context          上下文
+     * @param httpUrl          下载地址
+     * @param saveName         保存的名字
+     * @param savePath         保存路径
+     * @param downloadCallBack 回调
      */
     public InstallUtils(Context context, String httpUrl, String saveName, String savePath, DownloadCallBack downloadCallBack) {
         InstallUtils.downloadCallBack = downloadCallBack;
@@ -87,10 +87,10 @@ public class InstallUtils {
         this.httpUrl = httpUrl;
         this.saveName = saveName;
         this.savePath = savePath;
-        if(TextUtils.isEmpty(this.savePath)){
-            this.savePath = getCachePath(this.context);
+        if (TextUtils.isEmpty(this.savePath)) {
+            this.savePath = MNUtils.getCachePath(this.context);
         }
-        if(TextUtils.isEmpty(this.saveName)){
+        if (TextUtils.isEmpty(this.saveName)) {
             this.saveName = "update";
         }
     }
@@ -106,109 +106,116 @@ public class InstallUtils {
 
 
     public void downloadAPK() {
-        if (TextUtils.isEmpty(httpUrl)) {
-            downloadFail(new Exception("下载地址为空"));
-            return;
-        }
-        saveFile = new File(savePath);
-        if (!saveFile.exists()) {
-            boolean isMK = saveFile.mkdirs();
-            if (!isMK) {
-                //创建失败
-                downloadFail(new Exception("创建文件夹失败"));
+        try {
+
+            if (TextUtils.isEmpty(httpUrl)) {
+                downloadFail(new Exception("下载地址为空"));
                 return;
             }
-        }
-        if(saveFile.getAbsolutePath().endsWith("/")){
-            saveFile = new File(savePath + saveName + ".apk");
-        }else{
-            saveFile = new File(savePath + File.separator + saveName + ".apk");
-        }
-
-        //开始下载
-        downloadStart();
-        //开启线程下载
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                InputStream inputStream = null;
-                FileOutputStream outputStream = null;
-                HttpURLConnection connection = null;
-                try {
-                    URL url = new URL(httpUrl);
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setConnectTimeout(30 * 1000);
-                    connection.setReadTimeout(30 * 1000);
-                    connection.connect();
-
-                    //判断是不是成功
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode < 200 || responseCode >= 300) {
-                        //302重定向问题
-                        if(responseCode == 302){
-                            String location = connection.getHeaderField("Location");
-                            downloadAlgin(location);
-                            return;
-                        }
-                        //失败的地址
-                        final String responseMessage = connection.getResponseMessage();
-                        downloadFail(new Exception(responseMessage));
-                        return;
-                    }
-
-                    inputStream = connection.getInputStream();
-                    outputStream = new FileOutputStream(saveFile);
-                    fileLength = connection.getContentLength();
-
-                    //判断fileLength大小
-                    if (fileLength <= 0) {
-                        //失败
-                        downloadFail(new Exception("下载失败"));
-                        return;
-                    }
-
-                    //计时器
-                    initTimer();
-
-                    byte[] buffer = new byte[1024];
-                    int current = 0;
-                    int len;
-                    while ((len = inputStream.read(buffer)) > 0) {
-                        outputStream.write(buffer, 0, len);
-                        current += len;
-                        if (fileLength > 0) {
-                            fileCurrentLength = current;
-                        }
-                    }
-                    isComplete = true;
-
-                    //睡一秒钟，延时通知下载完成，部分手机可能出现解析包异常问题
-                    Thread.sleep(1000);
-                    //下载完成
-                    downloadComplete();
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                    downloadFail(e);
-                } finally {
-                    isHttp302 = false;
-                    try {
-                        if (inputStream != null)
-                            inputStream.close();
-                        if (outputStream != null)
-                            outputStream.close();
-                        if (connection != null)
-                            connection.disconnect();
-                    } catch (IOException e) {
-                    }
-                    //销毁Timer
-                    destroyTimer();
+            saveFile = new File(savePath);
+            if (!saveFile.exists()) {
+                boolean isMK = saveFile.mkdirs();
+                if (!isMK) {
+                    //创建失败
+                    downloadFail(new Exception("创建文件夹失败"));
+                    return;
                 }
             }
-        }).start();
+            if (saveFile.getAbsolutePath().endsWith("/")) {
+                saveFile = new File(savePath + saveName + ".apk");
+            } else {
+                saveFile = new File(savePath + File.separator + saveName + ".apk");
+            }
+
+
+            //开始下载
+            downloadStart();
+            //开启线程下载
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    InputStream inputStream = null;
+                    FileOutputStream outputStream = null;
+                    HttpURLConnection connection = null;
+                    try {
+                        URL url = new URL(httpUrl);
+                        connection = (HttpURLConnection) url.openConnection();
+                        connection.setConnectTimeout(30 * 1000);
+                        connection.setReadTimeout(30 * 1000);
+                        connection.connect();
+
+                        //判断是不是成功
+                        int responseCode = connection.getResponseCode();
+                        if (responseCode < 200 || responseCode >= 300) {
+                            //302重定向问题
+                            if (responseCode == 302) {
+                                String location = connection.getHeaderField("Location");
+                                downloadAlgin(location);
+                                return;
+                            }
+                            //失败的地址
+                            final String responseMessage = connection.getResponseMessage();
+                            downloadFail(new Exception(responseMessage));
+                            return;
+                        }
+
+                        inputStream = connection.getInputStream();
+                        outputStream = new FileOutputStream(saveFile);
+                        fileLength = connection.getContentLength();
+
+                        //判断fileLength大小
+                        if (fileLength <= 0) {
+                            //失败
+                            downloadFail(new Exception("下载失败"));
+                            return;
+                        }
+
+                        //计时器
+                        initTimer();
+
+                        byte[] buffer = new byte[1024];
+                        int current = 0;
+                        int len;
+                        while ((len = inputStream.read(buffer)) > 0) {
+                            outputStream.write(buffer, 0, len);
+                            current += len;
+                            if (fileLength > 0) {
+                                fileCurrentLength = current;
+                            }
+                        }
+                        isComplete = true;
+
+                        //睡一秒钟，延时通知下载完成，部分手机可能出现解析包异常问题
+                        Thread.sleep(500);
+                        //下载完成
+                        downloadComplete();
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                        downloadFail(e);
+                    } finally {
+                        isHttp302 = false;
+                        try {
+                            if (inputStream != null)
+                                inputStream.close();
+                            if (outputStream != null)
+                                outputStream.close();
+                            if (connection != null)
+                                connection.disconnect();
+                        } catch (IOException e) {
+                        }
+                        //销毁Timer
+                        destroyTimer();
+                    }
+                }
+            }).start();
+
+        } catch (Exception e) {
+            downloadFail(new Exception("下载异常"));
+        }
 
     }
 
-    private void downloadAlgin(final String newHttp){
+    private void downloadAlgin(final String newHttp) {
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -220,7 +227,7 @@ public class InstallUtils {
     }
 
     private void downloadStart() {
-        if(isHttp302){
+        if (isHttp302) {
             return;
         }
         isHttp302 = false;
@@ -231,31 +238,40 @@ public class InstallUtils {
     }
 
     private void downloadComplete() {
-        ((Activity) context).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                isHttp302 = false;
-                //解决某些低版本安装失败的问题
-                changeApkFileMode(saveFile);
-                if (downloadCallBack != null) {
-                    downloadCallBack.onComplete(saveFile.getPath());
-                    downloadCallBack = null;
+        try {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    isHttp302 = false;
+                    //解决某些低版本安装失败的问题
+                    MNUtils.changeApkFileMode(saveFile);
+                    if (downloadCallBack != null) {
+                        downloadCallBack.onComplete(saveFile.getPath());
+                        downloadCallBack = null;
+                    }
                 }
-            }
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void downloadFail(final Exception exception) {
-        ((Activity) context).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                isHttp302 = false;
-                if (downloadCallBack != null) {
-                    downloadCallBack.onFail(exception);
-                    downloadCallBack = null;
+        try {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    isHttp302 = false;
+                    if (downloadCallBack != null) {
+                        downloadCallBack.onFail(exception);
+                        downloadCallBack = null;
+                    }
                 }
-            }
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initTimer() {
@@ -317,7 +333,7 @@ public class InstallUtils {
                 callBack.onSuccess();
             }
             //关闭当前
-            android.os.Process.killProcess(android.os.Process.myPid());
+//            android.os.Process.killProcess(android.os.Process.myPid());
         } catch (Exception e) {
             if (callBack != null) {
                 callBack.onFail(e);
@@ -335,40 +351,6 @@ public class InstallUtils {
         Uri uri = Uri.parse(httpUrlApk);
         Intent viewIntent = new Intent(Intent.ACTION_VIEW, uri);
         context.startActivity(viewIntent);
-    }
-
-
-    /**
-     * 获取app缓存路径    SDCard/Android/data/你的应用的包名/cache
-     *
-     * @param context
-     * @return
-     */
-    public String getCachePath(Context context) {
-        String cachePath;
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                || !Environment.isExternalStorageRemovable()) {
-            //外部存储可用
-            cachePath = context.getExternalCacheDir().getPath();
-        } else {
-            //外部存储不可用
-            cachePath = context.getCacheDir().getPath();
-        }
-        return cachePath;
-    }
-
-    //参照：APK放到data/data/下面提示解析失败 (http://blog.csdn.net/lonely_fireworks/article/details/27693073)
-    private void changeApkFileMode(File file) {
-        try {
-            //apk放在缓存目录时，低版本安装提示权限错误，需要对父级目录和apk文件添加权限
-            String cmd1 = "chmod 777 " + file.getParent();
-            Runtime.getRuntime().exec(cmd1);
-
-            String cmd = "chmod 777 " + file.getAbsolutePath();
-            Runtime.getRuntime().exec(cmd);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 

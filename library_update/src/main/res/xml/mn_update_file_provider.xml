@@ -10,4 +10,20 @@
         name="mn_update_cache"
         path="." />
 
+    <external-path
+        name="mn_update_external_path"
+        path="." />
+
+    <files-path
+        name="mn_update_files_path"
+        path="." />
+
+    <external-files-path
+        name="mn_update_external_files_path"
+        path="." />
+
+    <root-path
+        name="mn_update_root_path"
+        path="." />
+
 </paths>
