@@ -12,7 +12,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ![](https://github.com/maning0303/MNUpdateAPK/raw/master/screenshots/001.gif)
 
 
-## 如何添加
+## 如何添加(请认真读完下面步骤和注意事项)
 ### Gradle添加：
 #### 1.在Project的build.gradle中添加仓库地址
 
@@ -170,10 +170,30 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 
 ```
 
+### 注意注意注意:
+##### 一加手机8.0碰到了安装解析失败问题请添加下面判断
+``` java
+
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+             //先获取是否有安装未知来源应用的权限
+             boolean haveInstallPermission = getPackageManager().canRequestPackageInstalls();
+             if (!haveInstallPermission) {
+                 //跳转设置开启允许安装
+                 Uri packageURI = Uri.parse("package:"+context.getPackageName());
+                 Intent intent =new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,packageURI);
+                 startActivityForResult(intent,1000);
+                 return;
+             }
+         }
+         //安装APK代码
+        
+
+```
+
 ## 版本记录:
 ##### 版本 V1.1.7:
-    1.添加自定义下载路径
-    2.安装时去掉关闭应用代码
+    1.可以自定义下载路径
+    2.删除安装后kill自己代码
     3.优化代码
     
 ##### 版本 V1.1.6:
