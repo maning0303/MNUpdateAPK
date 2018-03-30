@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void download(View view) {
         btnDownload.setClickable(false);
-        new InstallUtils(context, APK_URL, APK_NAME, APK_SAVE_PATH,new InstallUtils.DownloadCallBack() {
+        new InstallUtils(context, APK_URL, APK_NAME,new InstallUtils.DownloadCallBack() {
             @Override
             public void onStart() {
                 Log.i(TAG, "InstallUtils---onStart");

@@ -28,7 +28,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.6'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.7'
 	}
 ```
 
@@ -47,6 +47,35 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ```
 
 ### 2:代码使用
+#### 构造函数（可以自定义下载路径）：
+   
+``` java
+    /**
+     * 下载安装
+     *
+     * @param context          上下文
+     * @param httpUrl          下载地址
+     * @param saveName         保存的名字
+     * @param downloadCallBack 回调
+     */
+    public InstallUtils(Context context, String httpUrl, String saveName, DownloadCallBack downloadCallBack) {
+    }
+    
+    
+    /**
+     * 下载安装
+     *
+     * @param context          上下文
+     * @param httpUrl          下载地址
+     * @param saveName         保存的名字
+     * @param savePath         保存路径
+     * @param downloadCallBack 回调
+     */
+    public InstallUtils(Context context, String httpUrl, String saveName, String savePath, DownloadCallBack downloadCallBack) {
+    }
+    
+```
+
 #### 本地下载安装：
     
 ``` java
@@ -132,9 +161,9 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ```
 
 
-### 默认下载路径:
+### 默认下载路径（支持自定义下载路径）:
 ``` java
-
+        
      /Android/data/包名/cache/
      或者
      /data/data/包名/cache/
@@ -142,6 +171,11 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ```
 
 ## 版本记录:
+##### 版本 V1.1.7:
+    1.添加自定义下载路径
+    2.安装时去掉关闭应用代码
+    3.优化代码
+    
 ##### 版本 V1.1.6:
     1.修复http302 重定向问题
 
