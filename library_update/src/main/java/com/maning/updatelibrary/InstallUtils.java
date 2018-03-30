@@ -107,7 +107,6 @@ public class InstallUtils {
 
     public void downloadAPK() {
         try {
-
             if (TextUtils.isEmpty(httpUrl)) {
                 downloadFail(new Exception("下载地址为空"));
                 return;
@@ -185,8 +184,9 @@ public class InstallUtils {
                         }
                         isComplete = true;
 
-                        //睡一秒钟，延时通知下载完成，部分手机可能出现解析包异常问题
+                        //延时通知下载完成
                         Thread.sleep(500);
+
                         //下载完成
                         downloadComplete();
                     } catch (final Exception e) {
@@ -276,7 +276,7 @@ public class InstallUtils {
 
     private void initTimer() {
         mTimer = new Timer();
-        mTask = new TimerTask() {//在run方法中执行定时的任务
+        mTask = new TimerTask() {
             @Override
             public void run() {
                 ((Activity) context).runOnUiThread(new Runnable() {
@@ -291,7 +291,6 @@ public class InstallUtils {
                 });
             }
         };
-        //任务定时器一定要启动
         mTimer.schedule(mTask, 0, 200);
     }
 
@@ -320,10 +319,10 @@ public class InstallUtils {
             File apkFile = new File(filePath);
             Uri apkUri;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                String authority = context.getPackageName() + ".updateFileProvider";
-                apkUri = MNUpdateApkFileProvider.getUriForFile(context, authority, apkFile);
                 // 授予目录临时共享权限
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                String authority = context.getPackageName() + ".updateFileProvider";
+                apkUri = MNUpdateApkFileProvider.getUriForFile(context, authority, apkFile);
             } else {
                 apkUri = Uri.fromFile(apkFile);
             }
@@ -332,8 +331,6 @@ public class InstallUtils {
             if (callBack != null) {
                 callBack.onSuccess();
             }
-            //关闭当前
-//            android.os.Process.killProcess(android.os.Process.myPid());
         } catch (Exception e) {
             if (callBack != null) {
                 callBack.onFail(e);
