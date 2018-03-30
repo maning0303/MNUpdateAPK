@@ -30,7 +30,6 @@ dependencies {
 
     compile project(':library_update')
 
-
     //gradle测试
-//    compile 'com.github.maning0303:MNUpdateAPK:V1.1.6'
+//    compile 'com.github.maning0303:MNUpdateAPK:V1.1.7'
 }
