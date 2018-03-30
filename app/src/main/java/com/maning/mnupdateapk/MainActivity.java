@@ -2,8 +2,6 @@ package com.maning.mnupdateapk;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -40,18 +38,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         context = this;
 
+        initViews();
+
+    }
+
+    private void initViews() {
         tv_progress = (TextView) findViewById(R.id.tv_progress);
         tv_info = (TextView) findViewById(R.id.tv_info);
         btnDownload = (Button) findViewById(R.id.btnDownload);
-
-        //判断是不是最新版本
-        if (getVersionCode() > 1) {
-            //最新版本
-            tv_info.setText("当前版本是最新版本");
-        } else {
-            tv_info.setText("当前版本有更新");
-        }
-
     }
 
     public void otherPage(View view) {
@@ -105,24 +99,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }).downloadAPK();
-    }
-
-    //版本号
-    public int getVersionCode() {
-        return getPackageInfo().versionCode;
-    }
-
-    private PackageInfo getPackageInfo() {
-        PackageInfo pi = null;
-        try {
-            PackageManager pm = getPackageManager();
-            pi = pm.getPackageInfo(getPackageName(),
-                    PackageManager.GET_CONFIGURATIONS);
-            return pi;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return pi;
     }
 
 }
