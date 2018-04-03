@@ -68,6 +68,12 @@ public class InstallUtils {
     }
 
     /**
+     * 私有构造函数
+     */
+    private InstallUtils() {
+    }
+
+    /**
      * 设置监听
      *
      * @param downloadCallBack
@@ -77,14 +83,26 @@ public class InstallUtils {
     }
 
     /**
-     * 设置取消下载
+     * 取消下载
      *
-     * @param isCancle
      */
-    public static void setCancle(boolean isCancle) {
-        InstallUtils.isCancle = isCancle;
+    public static void cancleDownload() {
+        isCancle = true;
     }
 
+    /**
+     * 是否完成下载操作
+     * @return
+     */
+    public static boolean isComplete() {
+        return isComplete;
+    }
+
+    /**
+     * 初始化对象
+     * @param context   上下文
+     * @return
+     */
     public static InstallUtils with(Context context) {
         InstallUtils.context = context;
         if (mInstance == null) {
@@ -96,31 +114,50 @@ public class InstallUtils {
         return mInstance;
     }
 
-    private InstallUtils() {
-    }
-
-    public InstallUtils apkName(String apkName) {
+    /**
+     * 设置保存的名字
+     * @param apkName
+     * @return
+     */
+    public InstallUtils setApkName(String apkName) {
         this.saveName = apkName;
         return mInstance;
     }
 
-    public InstallUtils apkUrl(String apkUrl) {
+    /**
+     * 设置下载地址
+     * @param apkUrl
+     * @return
+     */
+    public InstallUtils setApkUrl(String apkUrl) {
         this.httpUrl = apkUrl;
         return mInstance;
     }
 
-    public InstallUtils apkSavePath(String apkPath) {
+    /**
+     * 设置下载后保存的地址
+     * @param apkPath
+     * @return
+     */
+    public InstallUtils setApkPath(String apkPath) {
         this.savePath = apkPath;
         return mInstance;
     }
 
+    /**
+     * 设置回调监听
+     * @param downloadCallBack
+     * @return
+     */
     public InstallUtils setCallBack(DownloadCallBack downloadCallBack) {
         InstallUtils.downloadCallBack = downloadCallBack;
         return mInstance;
     }
 
-
-    public void downloadAPK() {
+    /**
+     * 开始下载
+     */
+    public void startDownload() {
         if (TextUtils.isEmpty(this.savePath)) {
             this.savePath = MNUtils.getCachePath(this.context);
         }
@@ -142,9 +179,9 @@ public class InstallUtils {
                 }
             }
             if (saveFile.getAbsolutePath().endsWith("/")) {
-                saveFile = new File(savePath + saveName + ".apk");
+                saveFile = new File(savePath + saveName);
             } else {
-                saveFile = new File(savePath + File.separator + saveName + ".apk");
+                saveFile = new File(savePath + File.separator + saveName);
             }
             //开始下载
             downloadStart();
@@ -228,9 +265,8 @@ public class InstallUtils {
                         //销毁Timer
                         destroyTimer();
                         isCancle = false;
-                        isComplete = false;
                         isHttp302 = false;
-                        fileLength = 0;
+                        fileLength = 1;
                         fileCurrentLength = 0;
                         handler.removeCallbacksAndMessages(null);
                     }
@@ -249,7 +285,7 @@ public class InstallUtils {
             public void run() {
                 isHttp302 = true;
                 httpUrl = newHttp;
-                downloadAPK();
+                startDownload();
             }
         });
     }
@@ -387,6 +423,5 @@ public class InstallUtils {
         Intent viewIntent = new Intent(Intent.ACTION_VIEW, uri);
         context.startActivity(viewIntent);
     }
-
 
 }

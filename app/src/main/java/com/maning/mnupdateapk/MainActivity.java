@@ -2,9 +2,7 @@ package com.maning.mnupdateapk;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,13 +15,6 @@ import com.maning.updatelibrary.InstallUtils;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "InstallUtils";
-
-//    public static final String APK_URL = "http://download.fir.im/v2/app/install/56dd4bb7e75e2d27f2000046?download_token=e415c0fd1ac3b7abcb65ebc6603c59d9&source=update";
-    public static final String APK_URL = "http://download.fir.im/v2/app/install/5a52e936ca87a8600e0002f9?download_token=cd8662357947f151de92975b46082ba6&source=update";
-//    public static final String APK_URL = "https://www.pgyer.com/apiv2/app/install?appKey=e6fcefdffc8c0ef2d7700e867f3b9685&_api_key=ae839fd4e088946dc307140042b97e17";
-
-    public static final String APK_NAME = "update";
-    public static final String APK_SAVE_PATH = Environment.getExternalStorageDirectory() + "/MNUpdateAPK";
 
 
     private Context context;
@@ -129,21 +120,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnCancle:
-                InstallUtils.setCancle(true);
+                //取消下载
+                InstallUtils.cancleDownload();
+                btnDownload.setClickable(true);
+                btnDownload.setBackgroundResource(R.color.colorPrimary);
                 break;
             case R.id.btnOther:
                 startActivity(new Intent(this, OtherActivity.class));
                 break;
             case R.id.btnDownloadBrowser:
                 //通过浏览器去下载APK
-                InstallUtils.installAPKWithBrower(this, APK_URL);
+                InstallUtils.installAPKWithBrower(this, Constants.APK_URL_02);
                 break;
             case R.id.btnDownload:
                 InstallUtils.with(this)
-                        .apkUrl(APK_URL)
-                        .apkName(APK_NAME)
+                        //必须-下载地址
+                        .setApkUrl(Constants.APK_URL_03)
+                        //非必须，默认update
+                        .setApkName("update")
+                        //非必须-下载保存的路径
+                        .setApkPath(Constants.APK_SAVE_PATH)
+                        //非必须-下载回调
                         .setCallBack(downloadCallBack)
-                        .downloadAPK();
+                        //开始下载
+                        .startDownload();
                 break;
         }
     }

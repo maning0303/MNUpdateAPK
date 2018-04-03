@@ -7,7 +7,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
     2：安装APK
     
 ## 截图:
-![](https://github.com/maning0303/MNUpdateAPK/raw/master/screenshots/002.png)
+![](https://github.com/maning0303/MNUpdateAPK/raw/master/screenshots/002.jpg)
 ##### gif 比较慢
 ![](https://github.com/maning0303/MNUpdateAPK/raw/master/screenshots/001.gif)
 
@@ -28,7 +28,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.7'
+	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.8'
 	}
 ```
 
@@ -47,87 +47,71 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ```
 
 ### 2:代码使用
-#### 构造函数（可以自定义下载路径）：
-   
-``` java
-    /**
-     * 下载安装
-     *
-     * @param context          上下文
-     * @param httpUrl          下载地址
-     * @param saveName         保存的名字
-     * @param downloadCallBack 回调
-     */
-    public InstallUtils(Context context, String httpUrl, String saveName, DownloadCallBack downloadCallBack) {
-    }
-    
-    
-    /**
-     * 下载安装
-     *
-     * @param context          上下文
-     * @param httpUrl          下载地址
-     * @param saveName         保存的名字
-     * @param savePath         保存路径
-     * @param downloadCallBack 回调
-     */
-    public InstallUtils(Context context, String httpUrl, String saveName, String savePath, DownloadCallBack downloadCallBack) {
-    }
-    
-```
-
 #### 本地下载安装：
     
 ``` java
 
-      //最新APK的下载地址
-      public static final String APK_URL = "http://download.fir.im/v2/app/install/5a52e936ca87a8600e0002f9?download_token=cd8662357947f151de92975b46082ba6&source=update";
-      //下载后的APK的命名
-      public static final String APK_NAME = "update";
-        
-      new InstallUtils(context, APK_URL, APK_NAME, new InstallUtils.DownloadCallBack() {
-          @Override
-          public void onStart() {
-              Log.i(TAG, "InstallUtils---onStart");
-          }
-
-          @Override
-          public void onComplete(String path) {
-              Log.i(TAG, "InstallUtils---onComplete:" + path);
-
-              /**
-               * 安装APK工具类
-               * @param context       上下文
-               * @param filePath      文件路径
-               * @param callBack      安装界面成功调起的回调
-               */
-              InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+      //下载APK
+      InstallUtils.with(this)
+              //必须-下载地址
+              .setApkUrl(Constants.APK_URL_03)
+              //非必须，默认update
+              .setApkName("update")
+              //非必须-下载保存的路径
+              .setApkPath(Constants.APK_SAVE_PATH)
+              //非必须-下载回调
+              .setCallBack(new InstallUtils.DownloadCallBack() {
                   @Override
-                  public void onSuccess() {
-                      Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
+                  public void onStart() {
+                     //下载开始
                   }
-
+      
+                  @Override
+                  public void onComplete(String path) {
+                      //下载完成
+                      /**
+                       * 安装APK工具类
+                       * @param context       上下文
+                       * @param filePath      文件路径
+                       * @param callBack      安装界面成功调起的回调
+                       */
+                      InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+                          @Override
+                          public void onSuccess() {
+                              Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
+                          }
+                      
+                          @Override
+                          public void onFail(Exception e) {
+                              Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
+                          }
+                      });
+                  }
+      
+                  @Override
+                  public void onLoading(long total, long current) {
+                     //下载中
+                  }
+      
                   @Override
                   public void onFail(Exception e) {
-                      Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
+                      //下载失败
                   }
-              });
-          }
-
-          @Override
-          public void onLoading(long total, long current) {
-              Log.i(TAG, "InstallUtils----onLoading:-----total:" + total + ",current:" + current);
-          }
-
-          @Override
-          public void onFail(Exception e) {
-              Log.i(TAG, "InstallUtils---onFail:" + e.getMessage());
-          }
-
-      }).downloadAPK();
+      
+                  @Override
+                  public void cancle() {
+                      //下载取消
+                  }
+              })
+              //开始下载
+              .startDownload();
+              
+              
+      //取消下载
+      InstallUtils.cancleDownload();
       
       
-      //设置下载监听
+      //单独设置下载监听
       InstallUtils.setDownloadCallBack(new InstallUtils.DownloadCallBack() {
                   @Override
                   public void onStart() {
@@ -148,7 +132,32 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
                   public void onFail(Exception e) {
       
                   }
+                  
+                  @Override
+                  public void cancle() {
+                      
+                  }
               });
+              
+              
+      //安装APK
+      /**
+       * 安装APK工具类
+       * @param context       上下文
+       * @param filePath      文件路径
+       * @param callBack      安装界面成功调起的回调
+       */
+      InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+          @Override
+          public void onSuccess() {
+              Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
+          }
+      
+          @Override
+          public void onFail(Exception e) {
+              Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
+          }
+      });
       
 ```
 
@@ -191,6 +200,11 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ```
 
 ## 版本记录:
+##### 版本 V1.1.8:
+    1.可以取消下载
+    2.链式调用
+    3.版本改动大没需要重新设置代码
+    
 ##### 版本 V1.1.7:
     1.可以自定义下载路径
     2.删除安装后kill自己代码
