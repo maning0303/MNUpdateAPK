@@ -65,6 +65,11 @@ public class OtherActivity extends AppCompatActivity {
                 tv_progress.setText("0%");
                 tv_info.setText("下载失败:" + e.toString());
             }
+
+            @Override
+            public void cancle() {
+
+            }
         });
     }
 }

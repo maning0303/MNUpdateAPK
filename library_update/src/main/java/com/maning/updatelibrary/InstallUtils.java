@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,6 +24,8 @@ import java.util.TimerTask;
  */
 public class InstallUtils {
 
+    private static final String TAG = "InstallUtils";
+    private static InstallUtils mInstance;
 
     //任务定时器
     private Timer mTimer;
@@ -32,15 +36,17 @@ public class InstallUtils {
     //下载的文件大小
     private int fileCurrentLength;
 
-    private Context context;
     private String httpUrl;
     private String savePath;
     private String saveName;
-    private static DownloadCallBack downloadCallBack;
     private static File saveFile;
 
-    private boolean isComplete = false;
-    private boolean isHttp302 = false;  //是不是302重定向
+    private static Context context;
+    private static Handler handler = new Handler();
+    private static DownloadCallBack downloadCallBack;
+    private static boolean isComplete = false;   //是不是完成下载
+    private static boolean isHttp302 = false;  //是不是302重定向
+    private static boolean isCancle = false;  //是不是手动取消
 
 
     public interface DownloadCallBack {
@@ -51,48 +57,14 @@ public class InstallUtils {
         void onLoading(long total, long current);
 
         void onFail(Exception e);
+
+        void cancle();
     }
 
     public interface InstallCallBack {
-
         void onSuccess();
 
         void onFail(Exception e);
-    }
-
-    /**
-     * 下载安装
-     *
-     * @param context          上下文
-     * @param httpUrl          下载地址
-     * @param saveName         保存的名字
-     * @param downloadCallBack 回调
-     */
-    public InstallUtils(Context context, String httpUrl, String saveName, DownloadCallBack downloadCallBack) {
-        this(context, httpUrl, saveName, null, downloadCallBack);
-    }
-
-    /**
-     * 下载安装
-     *
-     * @param context          上下文
-     * @param httpUrl          下载地址
-     * @param saveName         保存的名字
-     * @param savePath         保存路径
-     * @param downloadCallBack 回调
-     */
-    public InstallUtils(Context context, String httpUrl, String saveName, String savePath, DownloadCallBack downloadCallBack) {
-        InstallUtils.downloadCallBack = downloadCallBack;
-        this.context = context;
-        this.httpUrl = httpUrl;
-        this.saveName = saveName;
-        this.savePath = savePath;
-        if (TextUtils.isEmpty(this.savePath)) {
-            this.savePath = MNUtils.getCachePath(this.context);
-        }
-        if (TextUtils.isEmpty(this.saveName)) {
-            this.saveName = "update";
-        }
     }
 
     /**
@@ -104,8 +76,57 @@ public class InstallUtils {
         InstallUtils.downloadCallBack = downloadCallBack;
     }
 
+    /**
+     * 设置取消下载
+     *
+     * @param isCancle
+     */
+    public static void setCancle(boolean isCancle) {
+        InstallUtils.isCancle = isCancle;
+    }
+
+    public static InstallUtils with(Context context) {
+        InstallUtils.context = context;
+        if (mInstance == null) {
+            mInstance = new InstallUtils();
+        }
+        isCancle = false;
+        isComplete = false;
+        isHttp302 = false;
+        return mInstance;
+    }
+
+    private InstallUtils() {
+    }
+
+    public InstallUtils apkName(String apkName) {
+        this.saveName = apkName;
+        return mInstance;
+    }
+
+    public InstallUtils apkUrl(String apkUrl) {
+        this.httpUrl = apkUrl;
+        return mInstance;
+    }
+
+    public InstallUtils apkSavePath(String apkPath) {
+        this.savePath = apkPath;
+        return mInstance;
+    }
+
+    public InstallUtils setCallBack(DownloadCallBack downloadCallBack) {
+        InstallUtils.downloadCallBack = downloadCallBack;
+        return mInstance;
+    }
+
 
     public void downloadAPK() {
+        if (TextUtils.isEmpty(this.savePath)) {
+            this.savePath = MNUtils.getCachePath(this.context);
+        }
+        if (TextUtils.isEmpty(this.saveName)) {
+            this.saveName = "update";
+        }
         try {
             if (TextUtils.isEmpty(httpUrl)) {
                 downloadFail(new Exception("下载地址为空"));
@@ -125,8 +146,6 @@ public class InstallUtils {
             } else {
                 saveFile = new File(savePath + File.separator + saveName + ".apk");
             }
-
-
             //开始下载
             downloadStart();
             //开启线程下载
@@ -145,13 +164,14 @@ public class InstallUtils {
 
                         //判断是不是成功
                         int responseCode = connection.getResponseCode();
-                        if (responseCode < 200 || responseCode >= 300) {
-                            //302重定向问题
-                            if (responseCode == 302) {
-                                String location = connection.getHeaderField("Location");
-                                downloadAlgin(location);
-                                return;
-                            }
+                        //302重定向问题
+                        if (responseCode == 302) {
+                            String location = connection.getHeaderField("Location");
+                            downloadAlgin(location);
+                            return;
+                        }
+                        //失败了
+                        if (responseCode != 200) {
                             //失败的地址
                             final String responseMessage = connection.getResponseMessage();
                             downloadFail(new Exception(responseMessage));
@@ -175,7 +195,7 @@ public class InstallUtils {
                         byte[] buffer = new byte[1024];
                         int current = 0;
                         int len;
-                        while ((len = inputStream.read(buffer)) > 0) {
+                        while (!isCancle && (len = inputStream.read(buffer)) > 0) {
                             outputStream.write(buffer, 0, len);
                             current += len;
                             if (fileLength > 0) {
@@ -183,17 +203,19 @@ public class InstallUtils {
                             }
                         }
                         isComplete = true;
-
+                        if (isCancle) {
+                            //下载取消
+                            downloadCancle();
+                            return;
+                        }
                         //延时通知下载完成
                         Thread.sleep(500);
-
                         //下载完成
                         downloadComplete();
                     } catch (final Exception e) {
                         e.printStackTrace();
                         downloadFail(e);
                     } finally {
-                        isHttp302 = false;
                         try {
                             if (inputStream != null)
                                 inputStream.close();
@@ -205,6 +227,12 @@ public class InstallUtils {
                         }
                         //销毁Timer
                         destroyTimer();
+                        isCancle = false;
+                        isComplete = false;
+                        isHttp302 = false;
+                        fileLength = 0;
+                        fileCurrentLength = 0;
+                        handler.removeCallbacksAndMessages(null);
                     }
                 }
             }).start();
@@ -216,7 +244,7 @@ public class InstallUtils {
     }
 
     private void downloadAlgin(final String newHttp) {
-        ((Activity) context).runOnUiThread(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 isHttp302 = true;
@@ -239,12 +267,9 @@ public class InstallUtils {
 
     private void downloadComplete() {
         try {
-            ((Activity) context).runOnUiThread(new Runnable() {
+            handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    isHttp302 = false;
-                    //解决某些低版本安装失败的问题
-                    MNUtils.changeApkFileMode(saveFile);
                     if (downloadCallBack != null) {
                         downloadCallBack.onComplete(saveFile.getPath());
                         downloadCallBack = null;
@@ -259,12 +284,27 @@ public class InstallUtils {
 
     private void downloadFail(final Exception exception) {
         try {
-            ((Activity) context).runOnUiThread(new Runnable() {
+            handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    isHttp302 = false;
                     if (downloadCallBack != null) {
                         downloadCallBack.onFail(exception);
+                        downloadCallBack = null;
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void downloadCancle() {
+        try {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (downloadCallBack != null) {
+                        downloadCallBack.cancle();
                         downloadCallBack = null;
                     }
                 }
@@ -279,13 +319,11 @@ public class InstallUtils {
         mTask = new TimerTask() {
             @Override
             public void run() {
-                ((Activity) context).runOnUiThread(new Runnable() {
+                handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (downloadCallBack != null) {
-                            if (!isComplete) {
-                                downloadCallBack.onLoading(fileLength, fileCurrentLength);
-                            }
+                        if (downloadCallBack != null && !isComplete) {
+                            downloadCallBack.onLoading(fileLength, fileCurrentLength);
                         }
                     }
                 });

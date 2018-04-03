@@ -9,15 +9,33 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <Button
-            android:id="@+id/btnDownload"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:background="@color/colorPrimary"
-            android:onClick="download"
-            android:text="下载"
-            android:textColor="#FFFFFF" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDownload"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:text="下载"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/btnCancle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:text="取消"
+                android:textColor="#FFFFFF" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnDownloadBrowser"
@@ -25,15 +43,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:background="@color/colorPrimary"
-            android:onClick="download2"
             android:text="下载-浏览器下载安装"
             android:textColor="#FFFFFF" />
 
         <Button
+            android:id="@+id/btnOther"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
-            android:onClick="otherPage"
             android:text="其他页面"
             android:textColor="#FFFFFF" />
 
