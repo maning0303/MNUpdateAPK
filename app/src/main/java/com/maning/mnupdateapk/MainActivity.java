@@ -135,11 +135,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnDownload:
                 InstallUtils.with(this)
                         //必须-下载地址
-                        .setApkUrl(Constants.APK_URL_03)
+                        .setApkUrl(Constants.APK_URL_02)
                         //非必须，默认update
                         .setApkName("update")
                         //非必须-下载保存的路径
-                        .setApkPath(Constants.APK_SAVE_PATH)
+//                        .setApkPath(Constants.APK_SAVE_PATH)
                         //非必须-下载回调
                         .setCallBack(downloadCallBack)
                         //开始下载

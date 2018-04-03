@@ -84,7 +84,6 @@ public class InstallUtils {
 
     /**
      * 取消下载
-     *
      */
     public static void cancleDownload() {
         isCancle = true;
@@ -92,6 +91,7 @@ public class InstallUtils {
 
     /**
      * 是否完成下载操作
+     *
      * @return
      */
     public static boolean isComplete() {
@@ -100,7 +100,8 @@ public class InstallUtils {
 
     /**
      * 初始化对象
-     * @param context   上下文
+     *
+     * @param context 上下文
      * @return
      */
     public static InstallUtils with(Context context) {
@@ -116,6 +117,7 @@ public class InstallUtils {
 
     /**
      * 设置保存的名字
+     *
      * @param apkName
      * @return
      */
@@ -126,6 +128,7 @@ public class InstallUtils {
 
     /**
      * 设置下载地址
+     *
      * @param apkUrl
      * @return
      */
@@ -136,6 +139,7 @@ public class InstallUtils {
 
     /**
      * 设置下载后保存的地址
+     *
      * @param apkPath
      * @return
      */
@@ -146,6 +150,7 @@ public class InstallUtils {
 
     /**
      * 设置回调监听
+     *
      * @param downloadCallBack
      * @return
      */
@@ -179,9 +184,9 @@ public class InstallUtils {
                 }
             }
             if (saveFile.getAbsolutePath().endsWith("/")) {
-                saveFile = new File(savePath + saveName);
+                saveFile = new File(savePath + saveName + ".apk");
             } else {
-                saveFile = new File(savePath + File.separator + saveName);
+                saveFile = new File(savePath + File.separator + saveName + ".apk");
             }
             //开始下载
             downloadStart();
