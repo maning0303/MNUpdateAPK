@@ -50,5 +50,5 @@ dependencies {
     compile project(':library_update')
 
     //gradle测试
-//    compile 'com.github.maning0303:MNUpdateAPK:V1.1.8'
+//    compile 'com.github.maning0303:MNUpdateAPK:V2.0.0'
 }
