@@ -11,8 +11,8 @@ import android.util.Log;
 import com.maning.updatelibrary.utils.ActForResultCallback;
 import com.maning.updatelibrary.utils.ActResultRequest;
 import com.maning.updatelibrary.utils.MNUtils;
-import com.maning.updatelibrary.v2.AbsFileProgressCallback;
-import com.maning.updatelibrary.v2.DownloadFileUtils;
+import com.maning.updatelibrary.http.AbsFileProgressCallback;
+import com.maning.updatelibrary.http.DownloadFileUtils;
 
 import java.io.File;
 

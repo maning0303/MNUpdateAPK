@@ -1,4 +1,4 @@
-package com.maning.updatelibrary.v2;
+package com.maning.updatelibrary.http;
 
 
 import java.util.Map;

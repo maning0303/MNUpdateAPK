@@ -1,4 +1,4 @@
-package com.maning.updatelibrary.v2;
+package com.maning.updatelibrary.http;
 
 import android.os.Handler;
 import android.os.Looper;

@@ -28,7 +28,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V1.1.8'
+	     compile 'com.github.maning0303:MNUpdateAPK:V2.0.0'
 	}
 ```
 
@@ -55,9 +55,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
       InstallUtils.with(this)
               //必须-下载地址
               .setApkUrl(Constants.APK_URL_03)
-              //非必须，默认update
-              .setApkName("update")
-              //非必须-下载保存的路径
+              //非必须-下载保存的文件的完整路径+/name.apk，使用自定义路径需要获取读写权限
               .setApkPath(Constants.APK_SAVE_PATH)
               //非必须-下载回调
               .setCallBack(new InstallUtils.DownloadCallBack() {
@@ -69,15 +67,18 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
                   @Override
                   public void onComplete(String path) {
                       //下载完成
+                      //安装APK
                       /**
                        * 安装APK工具类
-                       * @param context       上下文
+                       * @param activity       上下文
                        * @param filePath      文件路径
                        * @param callBack      安装界面成功调起的回调
                        */
-                      InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+                      InstallUtils.installAPK(activity, path, new InstallUtils.InstallCallBack() {
                           @Override
                           public void onSuccess() {
+                              //onSuccess：表示系统的安装界面被打开
+                              //防止用户取消安装，在这里可以关闭当前应用，以免出现安装被取消
                               Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
                           }
                       
@@ -143,13 +144,15 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
       //安装APK
       /**
        * 安装APK工具类
-       * @param context       上下文
+       * @param activity       上下文
        * @param filePath      文件路径
        * @param callBack      安装界面成功调起的回调
        */
-      InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+      InstallUtils.installAPK(activity, path, new InstallUtils.InstallCallBack() {
           @Override
           public void onSuccess() {
+              //onSuccess：表示系统的安装界面被打开
+              //防止用户取消安装，在这里可以关闭当前应用，以免出现安装被取消
               Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
           }
       
@@ -213,19 +216,6 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
     1.可以自定义下载路径
     2.删除安装后kill自己代码
     3.优化代码
-    
-##### 版本 V1.1.6:
-    1.修复http302 重定向问题
-
-##### 版本 V1.1.4:
-    1.优化代码
-    
-##### 版本 V1.1.3:
-    1.修复上版本fileProvider内置设置问题
-
-##### 版本 V1.1.2:
-    1.7.0适配fileProvider内置，不需要在外部添加，更加方便
-    2.8.0适配权限
 
 
 
