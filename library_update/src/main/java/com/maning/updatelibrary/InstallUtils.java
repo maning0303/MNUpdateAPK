@@ -1,4 +1,4 @@
-package com.maning.updatelibrary.v2;
+package com.maning.updatelibrary;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,10 +8,11 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.maning.updatelibrary.MNUpdateApkFileProvider;
 import com.maning.updatelibrary.utils.ActForResultCallback;
 import com.maning.updatelibrary.utils.ActResultRequest;
 import com.maning.updatelibrary.utils.MNUtils;
+import com.maning.updatelibrary.v2.AbsFileProgressCallback;
+import com.maning.updatelibrary.v2.DownloadFileUtils;
 
 import java.io.File;
 

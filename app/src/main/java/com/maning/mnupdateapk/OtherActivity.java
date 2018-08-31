@@ -1,14 +1,13 @@
 package com.maning.mnupdateapk;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.maning.updatelibrary.v2.InstallUtils;
+import com.maning.updatelibrary.InstallUtils;
 
 public class OtherActivity extends AppCompatActivity {
 
