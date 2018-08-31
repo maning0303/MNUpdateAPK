@@ -1,4 +1,4 @@
-package com.maning.updatelibrary;
+package com.maning.updatelibrary.utils;
 
 import android.content.Context;
 import android.os.Environment;
@@ -7,13 +7,10 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * <pre>
- *     author : maning
- *     e-mail : xxx@xx
- *     time   : 2018/03/30
- *     desc   : 工具类
- *     version: 1.0
- * </pre>
+ * author : maning
+ * time   : 2018/03/30
+ * desc   : 工具类
+ * version: 1.0
  */
 public class MNUtils {
 

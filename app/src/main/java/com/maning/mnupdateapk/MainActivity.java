@@ -1,5 +1,6 @@
 package com.maning.mnupdateapk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,14 +11,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.maning.updatelibrary.InstallUtils;
+import com.maning.updatelibrary.v2.InstallUtils;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "InstallUtils";
 
 
-    private Context context;
+    private Activity context;
 
     private TextView tv_progress;
     private TextView tv_info;
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initViews();
 
         initCallBack();
+
+        //申请SD卡权限
+        PermissionUtils.requestSDCardReadPermission(this, 100);
 
     }
 
@@ -78,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
                     @Override
                     public void onSuccess() {
+                        //onSuccess：表示系统的安装界面被打开
+                        //防止用户取消安装，在这里可以关闭当前应用，以免出现安装被取消
                         Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
                     }
 
@@ -118,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btnCancle:
                 //取消下载
                 InstallUtils.cancleDownload();
@@ -135,16 +141,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnDownload:
                 InstallUtils.with(this)
                         //必须-下载地址
-                        .setApkUrl(Constants.APK_URL_02)
-                        //非必须，默认update
-                        .setApkName("update")
-                        //非必须-下载保存的路径
-//                        .setApkPath(Constants.APK_SAVE_PATH)
+                        .setApkUrl(Constants.APK_URL_01)
+                        //非必须-下载保存的文件的完整路径+name.apk
+                        .setApkPath(Constants.APK_SAVE_PATH)
                         //非必须-下载回调
                         .setCallBack(downloadCallBack)
                         //开始下载
                         .startDownload();
                 break;
+            default:
+                break;
         }
     }
+
 }
