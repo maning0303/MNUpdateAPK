@@ -18,6 +18,6 @@ public class Constants {
     public static final String APK_URL_04 = "http://cdn.hfenq.cn/app/android/shenguixy.apk";
     public static final String APK_URL_05 = "https://www.zhuangzhujin.com/download/jinzhuangzhu.apk";
 
-    public static final String APK_SAVE_PATH = Environment.getExternalStorageDirectory() + "/MNUpdateAPK/update.apk";
+    public static final String APK_SAVE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MNUpdateAPK/update.apk";
 
 }

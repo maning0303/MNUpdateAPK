@@ -3,6 +3,7 @@ package com.maning.mnupdateapk;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -37,9 +38,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initViews();
 
         initCallBack();
-
-        //申请SD卡权限
-        PermissionUtils.requestSDCardReadPermission(this, 100);
 
     }
 
@@ -138,19 +136,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 InstallUtils.installAPKWithBrower(this, Constants.APK_URL_02);
                 break;
             case R.id.btnDownload:
-                InstallUtils.with(this)
-                        //必须-下载地址
-                        .setApkUrl(Constants.APK_URL_01)
-                        //非必须-下载保存的文件的完整路径+name.apk
-                        .setApkPath(Constants.APK_SAVE_PATH)
-                        //非必须-下载回调
-                        .setCallBack(downloadCallBack)
-                        //开始下载
-                        .startDownload();
+                //申请SD卡权限
+                if (!PermissionUtils.isGrantSDCardReadPermission(this)) {
+                    PermissionUtils.requestSDCardReadPermission(this, 100);
+                } else {
+                    InstallUtils.with(this)
+                            //必须-下载地址
+                            .setApkUrl(Constants.APK_URL_01)
+                            //非必须-下载保存的文件的完整路径+name.apk
+                            .setApkPath(Constants.APK_SAVE_PATH)
+                            //非必须-下载回调
+                            .setCallBack(downloadCallBack)
+                            //开始下载
+                            .startDownload();
+                }
                 break;
             default:
                 break;
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 }
