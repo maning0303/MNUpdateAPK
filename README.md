@@ -66,27 +66,47 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
       
                   @Override
                   public void onComplete(String path) {
+                  
                       //下载完成
-                      //安装APK
-                      /**
-                       * 安装APK工具类
-                       * @param activity       上下文
-                       * @param filePath      文件路径
-                       * @param callBack      安装界面成功调起的回调
-                       */
-                      InstallUtils.installAPK(activity, path, new InstallUtils.InstallCallBack() {
+                      //先判断有没有安装权限---适配8.0
+                      InstallUtils.checkInstallPermission(context, new InstallUtils.InstallPermissionCallBack() {
                           @Override
-                          public void onSuccess() {
-                              //onSuccess：表示系统的安装界面被打开
-                              //防止用户取消安装，在这里可以关闭当前应用，以免出现安装被取消
-                              Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
+                          public void onGranted() {
+                              //去安装APK
+                              installApk(...);
                           }
                       
                           @Override
-                          public void onFail(Exception e) {
-                              Toast.makeText(context, "安装失败:" + e.toString(), Toast.LENGTH_SHORT).show();
+                          public void onDenied() {
+                              //弹出弹框提醒用户
+                              AlertDialog alertDialog = new AlertDialog.Builder(context)
+                                      .setTitle("温馨提示")
+                                      .setMessage("必须授权才能安装APK，请设置允许安装")
+                                      .setNegativeButton("取消", null)
+                                      .setPositiveButton("设置", new DialogInterface.OnClickListener() {
+                                          @Override
+                                          public void onClick(DialogInterface dialog, int which) {
+                                              //打开设置页面
+                                              InstallUtils.openInstallPermissionSetting(context, new InstallUtils.InstallPermissionCallBack() {
+                                                  @Override
+                                                  public void onGranted() {
+                                                      //去安装APK
+                                                      installApk(...);
+                                                  }
+                      
+                                                  @Override
+                                                  public void onDenied() {
+                                                      //还是不允许咋搞？
+                                                      Toast.makeText(context, "不允许安装咋搞？强制更新就退出应用程序吧！", Toast.LENGTH_SHORT).show();
+                                                  }
+                                              });
+                                          }
+                                      })
+                                      .create();
+                              alertDialog.show();
                           }
                       });
+                 
                   }
       
                   @Override
