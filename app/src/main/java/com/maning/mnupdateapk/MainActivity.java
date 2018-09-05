@@ -99,10 +99,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onLoading(long total, long current) {
-                //内部做了处理，onLoading 进度转回progress肯定是+1，防止频率过快
+                //内部做了处理，onLoading 进度转回progress必须是+1，防止频率过快
                 Log.i(TAG, "InstallUtils----onLoading:-----total:" + total + ",current:" + current);
                 int progress = (int) (current * 100 / total);
-                //进度要处理一下
                 tv_progress.setText(progress + "%");
             }
 
