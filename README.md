@@ -184,10 +184,10 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 
 ```
 
-### 注意注意注意:
-##### 一加手机8.0碰到了安装解析失败问题请添加下面判断
+## 注意注意注意:
+#### 8.0权限问题解决方案：
 ``` java
-
+         //自己去判断
          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
              //先获取是否有安装未知来源应用的权限
              boolean haveInstallPermission = getPackageManager().canRequestPackageInstalls();
@@ -199,7 +199,52 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
                  return;
              }
          }
-         //安装APK代码
+         //安装APK
+         installAPK(...);
+        
+        
+         //------------------------分界线-----------------------
+         
+         
+         //当然这个东西已经封装好了。可以这样使用，详细可以查看Demo
+         //先判断有没有安装权限
+         InstallUtils.checkInstallPermission(context, new InstallUtils.InstallPermissionCallBack() {
+             @Override
+             public void onGranted() {
+                  //安装APK
+                  installAPK(...);
+             }
+         
+             @Override
+             public void onDenied() {
+                 //弹出弹框提醒用户
+                 AlertDialog alertDialog = new AlertDialog.Builder(context)
+                         .setTitle("温馨提示")
+                         .setMessage("必须授权才能安装APK，请设置允许安装")
+                         .setNegativeButton("取消", null)
+                         .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialog, int which) {
+                                 //打开安装权限设置页面
+                                 InstallUtils.openInstallPermissionSetting(context, new InstallUtils.InstallPermissionCallBack() {
+                                     @Override
+                                     public void onGranted() {
+                                         //安装APK
+                                         installAPK(...);
+                                     }
+         
+                                     @Override
+                                     public void onDenied() {
+                                         //还是不允许咋搞？
+                                         Toast.makeText(context, "不允许安装咋搞？强制更新就退出应用程序吧！", Toast.LENGTH_SHORT).show();
+                                     }
+                                 });
+                             }
+                         })
+                         .create();
+                 alertDialog.show();
+             }
+         });
         
 
 ```
