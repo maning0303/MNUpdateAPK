@@ -30,6 +30,10 @@ public class InstallUtils {
     private String httpUrl;
     private String filePath;
     private static DownloadCallBack mDownloadCallBack;
+    /**
+     * 是不是在正在下载
+     */
+    private static boolean isDownloading = false;
 
     /**
      * 下载回调监听
@@ -53,12 +57,22 @@ public class InstallUtils {
     }
 
     /**
+     * 是否正在下载
+     */
+    public static boolean isDownloading() {
+        return isDownloading;
+    }
+
+    /**
      * 设置监听
      *
      * @param downloadCallBack
      */
     public static void setDownloadCallBack(DownloadCallBack downloadCallBack) {
-        mDownloadCallBack = downloadCallBack;
+        //判断有没有开始
+        if (isDownloading) {
+            mDownloadCallBack = downloadCallBack;
+        }
     }
 
 
@@ -113,6 +127,10 @@ public class InstallUtils {
      * 开始下载
      */
     public void startDownload() {
+        //先取消之前的下载
+        if(isDownloading){
+            cancleDownload();
+        }
         //判断下载保存路径是不是空
         if (TextUtils.isEmpty(filePath)) {
             filePath = MNUtils.getCachePath(mContext) + "/update.apk";
@@ -122,8 +140,11 @@ public class InstallUtils {
                 .url(httpUrl)
                 .tag(InstallUtils.class)
                 .execute(new AbsFileProgressCallback() {
+                    int currentProgress = 0;
+
                     @Override
                     public void onSuccess(String result) {
+                        isDownloading = false;
                         if (mDownloadCallBack != null) {
                             mDownloadCallBack.onComplete(filePath);
                         }
@@ -131,13 +152,21 @@ public class InstallUtils {
 
                     @Override
                     public void onProgress(long bytesRead, long contentLength, boolean done) {
+                        isDownloading = true;
                         if (mDownloadCallBack != null) {
-                            mDownloadCallBack.onLoading(contentLength, bytesRead);
+                            //计算进度
+                            int progress = (int) (bytesRead * 100 / contentLength);
+                            //只有进度+1才回调，防止过快
+                            if (progress - currentProgress >= 1) {
+                                mDownloadCallBack.onLoading(contentLength, bytesRead);
+                            }
+                            currentProgress = progress;
                         }
                     }
 
                     @Override
                     public void onFailed(String errorMsg) {
+                        isDownloading = false;
                         if (mDownloadCallBack != null) {
                             mDownloadCallBack.onFail(new Exception(errorMsg));
                         }
@@ -145,6 +174,7 @@ public class InstallUtils {
 
                     @Override
                     public void onStart() {
+                        isDownloading = true;
                         if (mDownloadCallBack != null) {
                             mDownloadCallBack.onStart();
                         }
@@ -152,6 +182,7 @@ public class InstallUtils {
 
                     @Override
                     public void onCancle() {
+                        isDownloading = false;
                         if (mDownloadCallBack != null) {
                             mDownloadCallBack.cancle();
                         }

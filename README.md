@@ -28,7 +28,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V2.0.0'
+	     compile 'com.github.maning0303:MNUpdateAPK:V2.0.1'
 	}
 ```
 
@@ -54,7 +54,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
       //下载APK
       InstallUtils.with(this)
               //必须-下载地址
-              .setApkUrl(Constants.APK_URL_03)
+              .setApkUrl(Constants.APK_URL_01)
               //非必须-下载保存的文件的完整路径+/name.apk，使用自定义路径需要获取读写权限
               .setApkPath(Constants.APK_SAVE_PATH)
               //非必须-下载回调
@@ -111,6 +111,8 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
       //取消下载
       InstallUtils.cancleDownload();
       
+      //是否正在下载
+      InstallUtils.isDownloading();
       
       //单独设置下载监听
       InstallUtils.setDownloadCallBack(new InstallUtils.DownloadCallBack() {
@@ -206,6 +208,11 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 ##### 请添加okhttp3混淆
 
 ## 版本记录:
+##### 版本 V2.0.1:
+    1.优化代码，防止部分手机出现异常情况
+    2.添加新的方法：isDownloading --- 判断是不是正在下载
+    3.优化onLoading回调频率，只有转progress+1才回调一次，防止在当前方法更新notify出现卡顿现象
+    
 ##### 版本 V2.0.0:
     1.升级下载，使用okhttp下载
     2.优化安装代码，使用startActivityForResult()

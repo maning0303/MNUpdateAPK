@@ -58,8 +58,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        //设置监听
-        InstallUtils.setDownloadCallBack(downloadCallBack);
+        //设置监听,防止其他页面设置回调后当前页面回调失效
+        if (InstallUtils.isDownloading()) {
+            InstallUtils.setDownloadCallBack(downloadCallBack);
+        }
     }
 
     private void initCallBack() {
@@ -97,8 +99,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onLoading(long total, long current) {
+                //内部做了处理，onLoading 进度转回progress肯定是+1，防止频率过快
                 Log.i(TAG, "InstallUtils----onLoading:-----total:" + total + ",current:" + current);
-                tv_progress.setText((int) (current * 100 / total) + "%");
+                int progress = (int) (current * 100 / total);
+                //进度要处理一下
+                tv_progress.setText(progress + "%");
             }
 
             @Override
