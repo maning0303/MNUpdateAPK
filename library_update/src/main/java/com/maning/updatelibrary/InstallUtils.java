@@ -5,16 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.maning.updatelibrary.http.AbsFileProgressCallback;
+import com.maning.updatelibrary.http.DownloadFileUtils;
 import com.maning.updatelibrary.utils.ActForResultCallback;
 import com.maning.updatelibrary.utils.ActResultRequest;
 import com.maning.updatelibrary.utils.MNUtils;
-import com.maning.updatelibrary.http.AbsFileProgressCallback;
-import com.maning.updatelibrary.http.DownloadFileUtils;
 
 import java.io.File;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by maning on 16/8/15.
@@ -128,7 +131,7 @@ public class InstallUtils {
      */
     public void startDownload() {
         //先取消之前的下载
-        if(isDownloading){
+        if (isDownloading) {
             cancleDownload();
         }
         //判断下载保存路径是不是空
@@ -259,5 +262,81 @@ public class InstallUtils {
         Intent viewIntent = new Intent(Intent.ACTION_VIEW, uri);
         context.startActivity(viewIntent);
     }
+
+
+    /**
+     * 8.0权限检查回调监听
+     */
+    public interface InstallPermissionCallBack {
+        void onGranted();
+
+        void onDenied();
+    }
+
+
+    /**
+     * 检查有没有安装权限
+     * @param activity
+     * @param installPermissionCallBack
+     */
+    public static void checkInstallPermission(Activity activity, InstallPermissionCallBack installPermissionCallBack) {
+        if (hasInstallPermission(activity)) {
+            if (installPermissionCallBack != null) {
+                installPermissionCallBack.onGranted();
+            }
+        } else {
+            openInstallPermissionSetting(activity, installPermissionCallBack);
+        }
+    }
+
+
+    /**
+     * 判断有没有安装权限
+     * @param context
+     * @return
+     */
+    public static boolean hasInstallPermission(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //先获取是否有安装未知来源应用的权限
+            return context.getPackageManager().canRequestPackageInstalls();
+        }
+        return true;
+    }
+
+    /**
+     * 去打开安装权限的页面
+     * @param activity
+     * @param installPermissionCallBack
+     */
+    public static void openInstallPermissionSetting(Activity activity, final InstallPermissionCallBack installPermissionCallBack) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Uri packageURI = Uri.parse("package:" + activity.getPackageName());
+            Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
+            new ActResultRequest(activity).startForResult(intent, new ActForResultCallback() {
+                @Override
+                public void onActivityResult(int resultCode, Intent data) {
+                    Log.i(TAG, "onActivityResult:" + resultCode);
+                    if (resultCode == RESULT_OK) {
+                        //用户授权了
+                        if (installPermissionCallBack != null) {
+                            installPermissionCallBack.onGranted();
+                        }
+                    } else {
+                        //用户没有授权
+                        if (installPermissionCallBack != null) {
+                            installPermissionCallBack.onDenied();
+                        }
+                    }
+                }
+            });
+        } else {
+            //用户授权了
+            if (installPermissionCallBack != null) {
+                installPermissionCallBack.onGranted();
+            }
+        }
+
+    }
+
 
 }

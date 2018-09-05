@@ -1,9 +1,11 @@
 package com.maning.mnupdateapk;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnDownloadBrowser;
     private Button btnOther;
     private InstallUtils.DownloadCallBack downloadCallBack;
+    private String apkDownloadPath;
 
 
     @Override
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initCallBack();
 
     }
+
 
     private void initViews() {
         tv_progress = (TextView) findViewById(R.id.tv_progress);
@@ -78,23 +82,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onComplete(String path) {
                 Log.i(TAG, "InstallUtils---onComplete:" + path);
-                InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
-                    @Override
-                    public void onSuccess() {
-                        //onSuccess：表示系统的安装界面被打开
-                        //防止用户取消安装，在这里可以关闭当前应用，以免出现安装被取消
-                        Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFail(Exception e) {
-                        tv_info.setText("安装失败:" + e.toString());
-                    }
-                });
+                apkDownloadPath = path;
                 tv_progress.setText("100%");
                 tv_info.setText("下载成功");
                 btnDownload.setClickable(true);
                 btnDownload.setBackgroundResource(R.color.colorPrimary);
+
+                //先判断有没有安装权限
+                InstallUtils.checkInstallPermission(context, new InstallUtils.InstallPermissionCallBack() {
+                    @Override
+                    public void onGranted() {
+                        //去安装APK
+                        installApk(apkDownloadPath);
+                    }
+
+                    @Override
+                    public void onDenied() {
+                        //弹出弹框提醒用户
+                        AlertDialog alertDialog = new AlertDialog.Builder(context)
+                                .setTitle("温馨提示")
+                                .setMessage("必须授权才能安装APK，请设置允许安装")
+                                .setNegativeButton("取消", null)
+                                .setPositiveButton("设置", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //打开设置页面
+                                        InstallUtils.openInstallPermissionSetting(context, new InstallUtils.InstallPermissionCallBack() {
+                                            @Override
+                                            public void onGranted() {
+                                                //去安装APK
+                                                installApk(apkDownloadPath);
+                                            }
+
+                                            @Override
+                                            public void onDenied() {
+                                                //还是不允许咋搞？
+                                                Toast.makeText(context, "不允许安装咋搞？强制更新就退出应用程序吧！", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                })
+                                .create();
+                        alertDialog.show();
+                    }
+                });
             }
 
             @Override
@@ -121,6 +152,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 btnDownload.setBackgroundResource(R.color.colorPrimary);
             }
         };
+    }
+
+    private void installApk(String path) {
+        InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+            @Override
+            public void onSuccess() {
+                //onSuccess：表示系统的安装界面被打开
+                //防止用户取消安装，在这里可以关闭当前应用，以免出现安装被取消
+                Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                tv_info.setText("安装失败:" + e.toString());
+            }
+        });
     }
 
     @Override
