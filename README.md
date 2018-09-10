@@ -127,7 +127,22 @@ Android APK Update 版本更新的下载和安装,适配7.0，8.0下载安装
               })
               //开始下载
               .startDownload();
+           
               
+      //安装APK
+      InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
+                  @Override
+                  public void onSuccess() {
+                      //onSuccess：表示系统的安装界面被打开
+                      //防止用户取消安装，在这里可以关闭当前应用，以免出现安装被取消
+                      Toast.makeText(context, "正在安装程序", Toast.LENGTH_SHORT).show();
+                  }
+      
+                  @Override
+                  public void onFail(Exception e) {
+                      //安装出现异常，这里可以提示用用去用浏览器下载安装
+                  }
+              });
               
       //取消下载
       InstallUtils.cancleDownload();
@@ -274,6 +289,9 @@ Android APK Update 版本更新的下载和安装,适配7.0，8.0下载安装
 ##### 请添加okhttp3混淆
 
 ## 版本记录:
+##### 版本 V2.0.2:
+    1.封装8.0安装权限判断，可以选择封装好了，也可以自己去实现
+
 ##### 版本 V2.0.1:
     1.优化代码，防止部分手机出现异常情况
     2.添加新的方法：isDownloading --- 判断是不是正在下载
