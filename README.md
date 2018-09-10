@@ -28,7 +28,7 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V2.0.1'
+	     compile 'com.github.maning0303:MNUpdateAPK:V2.0.2'
 	}
 ```
 
@@ -66,9 +66,10 @@ Android APK 版本更新的下载和安装,适配7.0，8.0下载安装
       
                   @Override
                   public void onComplete(String path) {
-                  
+                        
                       //下载完成
                       //先判断有没有安装权限---适配8.0
+                      //如果不想用封装好的，可以自己去实现8.0适配
                       InstallUtils.checkInstallPermission(context, new InstallUtils.InstallPermissionCallBack() {
                           @Override
                           public void onGranted() {
