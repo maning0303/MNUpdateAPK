@@ -28,7 +28,7 @@ Android APK Update 版本更新的下载和安装,适配7.0，8.0下载安装
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V2.0.2'
+	     compile 'com.github.maning0303:MNUpdateAPK:V2.0.3'
 	}
 ```
 
@@ -289,6 +289,10 @@ Android APK Update 版本更新的下载和安装,适配7.0，8.0下载安装
 ##### 请添加okhttp3混淆
 
 ## 版本记录:
+##### 版本 V2.0.3:
+    1.优化代码，防止部分手机 data/../cacha 下载目录出现文件没有系统权限问题
+    2.minSdkVersion == 14
+    
 ##### 版本 V2.0.2:
     1.封装8.0安装权限判断，可以选择封装好了，也可以自己去实现
 
