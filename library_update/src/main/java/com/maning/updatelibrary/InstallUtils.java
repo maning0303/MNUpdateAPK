@@ -25,7 +25,7 @@ import static android.app.Activity.RESULT_OK;
  */
 public class InstallUtils {
 
-    private static final String TAG = "InstallUtils";
+    private static final String TAG = InstallUtils.class.getSimpleName();
     private static InstallUtils mInstance;
     private static Context mContext;
 
@@ -138,6 +138,9 @@ public class InstallUtils {
         if (TextUtils.isEmpty(filePath)) {
             filePath = MNUtils.getCachePath(mContext) + "/update.apk";
         }
+        //文件权限处理
+        MNUtils.changeApkFileMode(new File(filePath));
+        //下载
         DownloadFileUtils.with()
                 .downloadPath(filePath)
                 .url(httpUrl)
