@@ -194,8 +194,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     InstallUtils.with(this)
                             //必须-下载地址
                             .setApkUrl(Constants.APK_URL_01)
-                            //非必须-下载保存的文件的完整路径+name.apk
-                            .setApkPath(Constants.APK_SAVE_PATH)
+//                            //非必须-下载保存的文件的完整路径+name.apk
+//                            .setApkPath(Constants.APK_SAVE_PATH)
                             //非必须-下载回调
                             .setCallBack(downloadCallBack)
                             //开始下载
