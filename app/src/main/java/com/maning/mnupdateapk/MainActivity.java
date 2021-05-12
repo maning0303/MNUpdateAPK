@@ -15,6 +15,9 @@ import android.widget.Toast;
 
 import com.maning.updatelibrary.InstallUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "InstallUtils";
@@ -82,6 +85,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onComplete(String path) {
                 Log.i(TAG, "InstallUtils---onComplete:" + path);
+
+                //获取文件大小
+                File file = new File(path);
+                long fileSizes = getFileSizes(file);
+                //APK大于1MB
+                if (fileSizes <= 1 * 1024 * 1024) {
+                    Log.i(TAG, "文件异常，请稍后重试:" + fileSizes);
+                }
                 apkDownloadPath = path;
                 tv_progress.setText("100%");
                 tv_info.setText("下载成功");
@@ -193,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     InstallUtils.with(this)
                             //必须-下载地址
-                            .setApkUrl(Constants.APK_URL_01)
+                            .setApkUrl(Constants.APK_URL_03)
 //                            //非必须-下载保存的文件的完整路径+name.apk
 //                            .setApkPath(Constants.APK_SAVE_PATH)
                             //非必须-下载回调
@@ -210,5 +221,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public long getFileSizes(File f) {
+        try {
+            long s = 0;
+            if (f.exists()) {
+                FileInputStream fis = null;
+                fis = new FileInputStream(f);
+                s = fis.available();
+                fis.close();
+            }
+            return s;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }
