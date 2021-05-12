@@ -7,9 +7,11 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0，8.0下�
     2：安装APK
     
 ## 截图:
-![](https://github.com/maning0303/MNUpdateAPK/raw/master/screenshots/002.jpg)
-##### gif 比较慢
-![](https://github.com/maning0303/MNUpdateAPK/raw/master/screenshots/001.gif)
+
+<div align="center">
+<img src = "screenshots/mn_updateapk_002.jpg" width=200 >
+<img src = "screenshots/mn_updateapk_001.gif" width=200 >
+</div>
 
 
 ## 如何添加(请认真读完下面步骤和注意事项)
