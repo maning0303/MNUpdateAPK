@@ -30,7 +30,13 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0，8.0下�
 #### 2.在Module目录下的build.gradle中添加依赖
 ``` gradle
 	dependencies {
-	     compile 'com.github.maning0303:MNUpdateAPK:V2.0.3'
+        //AndroidX
+        implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+	    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.4'
+
+        //Suport版本
+        implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+	    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.3'
 	}
 ```
 
