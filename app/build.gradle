@@ -51,5 +51,5 @@ dependencies {
     implementation project(':library_update')
 
     //gradle测试
-//    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.3'
+//    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.4'
 }
