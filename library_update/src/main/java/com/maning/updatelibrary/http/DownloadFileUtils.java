@@ -2,7 +2,7 @@ package com.maning.updatelibrary.http;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import java.io.File;
