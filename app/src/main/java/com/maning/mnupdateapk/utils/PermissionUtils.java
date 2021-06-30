@@ -1,4 +1,4 @@
-package com.maning.mnupdateapk;
+package com.maning.mnupdateapk.utils;
 
 import android.Manifest;
 import android.app.Activity;

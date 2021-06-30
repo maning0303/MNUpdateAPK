@@ -47,6 +47,10 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.android.volley:volley:1.1.1'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.github.maning0303:MNProgressHUD:V2.0.0X'
+
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation project(':library_update')
 

@@ -4,19 +4,36 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.maning.mndialoglibrary.MProgressDialog;
+import com.maning.mndialoglibrary.MToast;
+import com.maning.mnupdateapk.bean.PgyerAppCheckResultBean;
+import com.maning.mnupdateapk.cons.Constants;
+import com.maning.mnupdateapk.utils.PermissionUtils;
 import com.maning.updatelibrary.InstallUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -33,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnOther;
     private InstallUtils.DownloadCallBack downloadCallBack;
     private String apkDownloadPath;
+    private Button mGetDownloadUrl;
 
 
     @Override
@@ -41,25 +59,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         context = this;
 
-        initViews();
+        initView();
 
         initCallBack();
-
     }
 
 
-    private void initViews() {
+    private void initView() {
         tv_progress = (TextView) findViewById(R.id.tv_progress);
         tv_info = (TextView) findViewById(R.id.tv_info);
         btnDownload = (Button) findViewById(R.id.btnDownload);
         btnCancle = (Button) findViewById(R.id.btnCancle);
         btnDownloadBrowser = (Button) findViewById(R.id.btnDownloadBrowser);
         btnOther = (Button) findViewById(R.id.btnOther);
-
+        mGetDownloadUrl = (Button) findViewById(R.id.getDownloadUrl);
         btnDownload.setOnClickListener(this);
         btnCancle.setOnClickListener(this);
         btnDownloadBrowser.setOnClickListener(this);
         btnOther.setOnClickListener(this);
+        mGetDownloadUrl.setOnClickListener(this);
+    }
+
+    private void getAppUpdateInfo() {
+        MProgressDialog.showProgress(this);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://www.pgyer.com/apiv2/app/check";
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        MProgressDialog.dismissProgress();
+                        if(!TextUtils.isEmpty(response)){
+                            PgyerAppCheckResultBean result = new Gson().fromJson(response, PgyerAppCheckResultBean.class);
+                            if (result != null && result.getCode() == 0 && result.getData() != null) {
+                                PgyerAppCheckResultBean.Data data = result.getData();
+                                String downloadURL = data.getDownloadURL();
+                                Log.e("======","downloadURL:"+downloadURL);
+                                Constants.APK_URL = downloadURL;
+                                MToast.makeTextShort("获取地址成功");
+                                return;
+                            }
+                        }
+                        MToast.makeTextShort("获取信息错误错误");
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                MProgressDialog.dismissProgress();
+                MToast.makeTextShort("错误："+error.getMessage());
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("_api_key", "c193c7301fd75ae5a771d8923df6300a");
+                params.put("appKey", "bfed5049f2b2c0ce048fd62b015956ac");
+                params.put("buildVersion", "1.0.0");
+                return params;
+            }
+        };
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     @Override
@@ -194,10 +255,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, OtherActivity.class));
                 break;
             case R.id.btnDownloadBrowser:
+                if(TextUtils.isEmpty(Constants.APK_URL)){
+                    Toast.makeText(context,"请先获取最新的下载地址",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //通过浏览器去下载APK
                 InstallUtils.installAPKWithBrower(this, Constants.APK_URL);
                 break;
             case R.id.btnDownload:
+                if(TextUtils.isEmpty(Constants.APK_URL)){
+                    Toast.makeText(context,"请先获取最新的下载地址",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //申请SD卡权限
                 if (!PermissionUtils.isGrantSDCardReadPermission(this)) {
                     PermissionUtils.requestSDCardReadPermission(this, 100);
@@ -212,6 +281,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             //开始下载
                             .startDownload();
                 }
+                break;
+            case R.id.getDownloadUrl:
+                getAppUpdateInfo();
                 break;
             default:
                 break;
@@ -237,4 +309,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return 0;
         }
     }
+
 }
