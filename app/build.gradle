@@ -52,8 +52,8 @@ dependencies {
     implementation 'com.github.maning0303:MNProgressHUD:V2.0.0X'
 
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-    implementation project(':library_update')
+//    implementation project(':library_update')
 
     //gradle测试
-//    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.4'
+    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.5'
 }

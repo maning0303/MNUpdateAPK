@@ -1,5 +1,5 @@
 # MNUpdateAPK
-Android APK Update Version APK版本更新的下载和安装,适配7.0，8.0下载安装
+Android APK Update Version APK版本更新的下载和安装,适配7.0 以上下载安装
 [![](https://jitpack.io/v/maning0303/MNUpdateAPK.svg)](https://jitpack.io/#maning0303/MNUpdateAPK)
 
 ## 功能：
@@ -32,9 +32,9 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0，8.0下�
 	dependencies {
         //AndroidX
         implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-	    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.4'
+	    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.5'
 
-        //Suport版本
+        //Suport版本，建议升级AndroidX，不更新
         implementation 'com.squareup.okhttp3:okhttp:3.11.0'
 	    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.3'
 	}
@@ -297,31 +297,8 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0，8.0下�
 ##### 请添加okhttp3混淆
 
 ## 版本记录:
-##### 版本 V2.0.3:
-    1.优化代码，防止部分手机 data/../cacha 下载目录出现文件没有系统权限问题
-    2.minSdkVersion == 14
-    
-##### 版本 V2.0.2:
-    1.封装8.0安装权限判断，可以选择封装好了，也可以自己去实现
-
-##### 版本 V2.0.1:
-    1.优化代码，防止部分手机出现异常情况
-    2.添加新的方法：isDownloading --- 判断是不是正在下载
-    3.优化onLoading回调频率，只有转progress+1才回调一次，防止在当前方法更新notify出现卡顿现象
-    
-##### 版本 V2.0.0:
-    1.升级下载，使用okhttp下载
-    2.优化安装代码，使用startActivityForResult()
-
-##### 版本 V1.1.8:
-    1.可以取消下载
-    2.链式调用
-    3.版本改动大没需要重新设置代码
-    
-##### 版本 V1.1.7:
-    1.可以自定义下载路径
-    2.删除安装后kill自己代码
-    3.优化代码
+##### 版本 V2.0.5:
+    1.优化安装Intent设置FLAG_GRANT_READ_URI_PERMISSION，防止出现权限问题
 
 
 
