@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btnDownloadBrowser:
                 //通过浏览器去下载APK
-                InstallUtils.installAPKWithBrower(this, Constants.APK_URL_02);
+                InstallUtils.installAPKWithBrower(this, Constants.APK_URL);
                 break;
             case R.id.btnDownload:
                 //申请SD卡权限
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     InstallUtils.with(this)
                             //必须-下载地址
-                            .setApkUrl(Constants.APK_URL_03)
+                            .setApkUrl(Constants.APK_URL)
 //                            //非必须-下载保存的文件的完整路径+name.apk
 //                            .setApkPath(Constants.APK_SAVE_PATH)
                             //非必须-下载回调
