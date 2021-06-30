@@ -3,11 +3,15 @@ package com.maning.updatelibrary;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.core.content.FileProvider;
 
 import com.maning.updatelibrary.http.AbsFileProgressCallback;
 import com.maning.updatelibrary.http.DownloadFileUtils;
@@ -222,24 +226,10 @@ public class InstallUtils {
     public static void installAPK(Activity context, String filePath, final InstallCallBack callBack) {
         try {
             MNUtils.changeApkFileMode(new File(filePath));
-            Intent intent = new Intent();
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setAction(Intent.ACTION_VIEW);
-            File apkFile = new File(filePath);
-            Uri apkUri;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                // 授予目录临时共享权限
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                String authority = context.getPackageName() + ".updateFileProvider";
-                apkUri = MNUpdateApkFileProvider.getUriForFile(context, authority, apkFile);
-            } else {
-                apkUri = Uri.fromFile(apkFile);
-            }
-            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            Intent intent = getInstallIntent(context,filePath);
             new ActResultRequest(context).startForResult(intent, new ActForResultCallback() {
                 @Override
                 public void onActivityResult(int resultCode, Intent data) {
-                    Log.i(TAG, "onActivityResult:" + resultCode);
                     //调起了系统安装页面
                     if (callBack != null) {
                         callBack.onSuccess();
@@ -252,6 +242,44 @@ public class InstallUtils {
                 callBack.onFail(e);
             }
         }
+    }
+
+
+    public static Intent getInstallIntent(Context context, String filePath){
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(Intent.ACTION_VIEW);
+        File apkFile = new File(filePath);
+        Uri apkUri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // 授予目录临时共享权限
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            String authority = getFileProviderAuthority(context);
+            apkUri = MNUpdateApkFileProvider.getUriForFile(context, authority, apkFile);
+            context.grantUriPermission(context.getPackageName(), apkUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            context.grantUriPermission(context.getPackageName(), apkUri, Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        } else {
+            apkUri = Uri.fromFile(apkFile);
+        }
+        intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        return intent;
+    }
+
+    /**
+     * 获取FileProvider的auth
+     */
+    private static String getFileProviderAuthority(Context context) {
+        try {
+            for (ProviderInfo provider : context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PROVIDERS).providers) {
+                if (MNUpdateApkFileProvider.class.getName().equals(provider.name) && provider.authority.endsWith(".mn_update_apk.file_provider")) {
+                    return provider.authority;
+                }
+            }
+        } catch (PackageManager.NameNotFoundException ignore) {
+        }
+        return null;
     }
 
     /**

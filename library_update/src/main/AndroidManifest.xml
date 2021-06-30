@@ -12,7 +12,7 @@
 
         <provider
             android:name="com.maning.updatelibrary.MNUpdateApkFileProvider"
-            android:authorities="${applicationId}.updateFileProvider"
+            android:authorities="${applicationId}.mn_update_apk.file_provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
