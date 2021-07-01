@@ -327,7 +327,7 @@ public class InstallUtils {
      * @return
      */
     public static boolean hasInstallPermission(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (MNUtils.isAndroid8()) {
             //先获取是否有安装未知来源应用的权限
             return context.getPackageManager().canRequestPackageInstalls();
         }
@@ -368,6 +368,5 @@ public class InstallUtils {
         }
 
     }
-
 
 }

@@ -1,5 +1,5 @@
 # MNUpdateAPK
-Android APK Update Version APK版本更新的下载和安装,适配7.0 以上下载安装
+Android APK Update Version APK版本更新的下载和安装,适配7.0-11.0下载安装
 [![](https://jitpack.io/v/maning0303/MNUpdateAPK.svg)](https://jitpack.io/#maning0303/MNUpdateAPK)
 
 ## 功能：
@@ -55,11 +55,58 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0 以上下
 ```
 
 ### 2:代码使用
+
+#### Android 11 适配问题：
+#####  1.存储权限需要自行适配
+
+#####  2.安装权限：REQUEST_INSTALL_PACKAGES，11用户授权安装权限后会自动的重启App,所以建议在下载新版本之前优先检查有没有安装权限，就不要再下载完成后检查权限，防止出现需要用户下载两次问题。
+
+
 #### 本地下载安装：
     
 ``` java
 
-      //下载APK
+      //1.先判断有没有安装权限---适配8.0
+      //如果不想用封装好的，可以自己去实现8.0适配
+      InstallUtils.checkInstallPermission(context, new InstallUtils.InstallPermissionCallBack() {
+          @Override
+          public void onGranted() {
+              //去下载Apk
+              downloadApk(...);
+          }
+
+          @Override
+          public void onDenied() {
+              //弹出弹框提醒用户
+              AlertDialog alertDialog = new AlertDialog.Builder(context)
+                      .setTitle("温馨提示")
+                      .setMessage("必须授权才能安装APK，请设置允许安装")
+                      .setNegativeButton("取消", null)
+                      .setPositiveButton("设置", new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialog, int which) {
+                              //打开设置页面
+                              InstallUtils.openInstallPermissionSetting(context, new InstallUtils.InstallPermissionCallBack() {
+                                  @Override
+                                  public void onGranted() {
+                                      //去下载Apk
+                                      downloadApk(...);
+                                  }
+
+                                  @Override
+                                  public void onDenied() {
+                                      //还是不允许咋搞？
+                                      Toast.makeText(context, "不允许安装咋搞？强制更新就退出应用程序吧！", Toast.LENGTH_SHORT).show();
+                                  }
+                              });
+                          }
+                      })
+                      .create();
+              alertDialog.show();
+          }
+      });
+
+      //2.下载APK
       InstallUtils.with(this)
               //必须-下载地址
               .setApkUrl(Constants.APK_URL_01)
@@ -74,48 +121,8 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0 以上下
       
                   @Override
                   public void onComplete(String path) {
-                        
                       //下载完成
-                      //先判断有没有安装权限---适配8.0
-                      //如果不想用封装好的，可以自己去实现8.0适配
-                      InstallUtils.checkInstallPermission(context, new InstallUtils.InstallPermissionCallBack() {
-                          @Override
-                          public void onGranted() {
-                              //去安装APK
-                              installApk(...);
-                          }
-                      
-                          @Override
-                          public void onDenied() {
-                              //弹出弹框提醒用户
-                              AlertDialog alertDialog = new AlertDialog.Builder(context)
-                                      .setTitle("温馨提示")
-                                      .setMessage("必须授权才能安装APK，请设置允许安装")
-                                      .setNegativeButton("取消", null)
-                                      .setPositiveButton("设置", new DialogInterface.OnClickListener() {
-                                          @Override
-                                          public void onClick(DialogInterface dialog, int which) {
-                                              //打开设置页面
-                                              InstallUtils.openInstallPermissionSetting(context, new InstallUtils.InstallPermissionCallBack() {
-                                                  @Override
-                                                  public void onGranted() {
-                                                      //去安装APK
-                                                      installApk(...);
-                                                  }
-                      
-                                                  @Override
-                                                  public void onDenied() {
-                                                      //还是不允许咋搞？
-                                                      Toast.makeText(context, "不允许安装咋搞？强制更新就退出应用程序吧！", Toast.LENGTH_SHORT).show();
-                                                  }
-                                              });
-                                          }
-                                      })
-                                      .create();
-                              alertDialog.show();
-                          }
-                      });
-                 
+                    InstallUtils.installAPK();
                   }
       
                   @Override
@@ -137,7 +144,7 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0 以上下
               .startDownload();
            
               
-      //安装APK
+      //3.安装APK
       InstallUtils.installAPK(context, path, new InstallUtils.InstallCallBack() {
                   @Override
                   public void onSuccess() {

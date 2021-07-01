@@ -1,6 +1,7 @@
 package com.maning.updatelibrary.utils;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
@@ -45,6 +46,48 @@ public class MNUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 是否是 Android 11 及以上版本
+     */
+    public static boolean isAndroid11() {
+        return Build.VERSION.SDK_INT >= 30;
+    }
+
+    /**
+     * 是否是 Android 10 及以上版本
+     */
+    public static boolean isAndroid10() {
+        return Build.VERSION.SDK_INT >= 29;
+    }
+
+    /**
+     * 是否是 Android 9.0 及以上版本
+     */
+    public static boolean isAndroid9() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+    }
+
+    /**
+     * 是否是 Android 8.0 及以上版本
+     */
+    public static boolean isAndroid8() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    /**
+     * 是否是 Android 7.0 及以上版本
+     */
+    public static boolean isAndroid7() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+    }
+
+    /**
+     * 是否是 Android 6.0 及以上版本
+     */
+    public static boolean isAndroid6() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
 }
