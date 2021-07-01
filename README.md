@@ -51,6 +51,8 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0-11.0下�
       <!--读写权限-->
       <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
       <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+      <!--读写权限Android11-->
+      <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
 ```
 
