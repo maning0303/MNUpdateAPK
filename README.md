@@ -121,8 +121,8 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0-11.0下�
       
                   @Override
                   public void onComplete(String path) {
-                      //下载完成
-                    InstallUtils.installAPK();
+                     //下载完成
+                     InstallUtils.installAPK();
                   }
       
                   @Override
@@ -132,12 +132,12 @@ Android APK Update Version APK版本更新的下载和安装,适配7.0-11.0下�
       
                   @Override
                   public void onFail(Exception e) {
-                      //下载失败
+                     //下载失败
                   }
       
                   @Override
                   public void cancle() {
-                      //下载取消
+                     //下载取消
                   }
               })
               //开始下载

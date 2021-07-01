@@ -1,4 +1,4 @@
-package com.maning.mnupdateapk;
+package com.maning.mnupdateapk.ui;
 
 import android.app.Activity;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.maning.mnupdateapk.R;
 import com.maning.updatelibrary.InstallUtils;
 
 public class OtherActivity extends AppCompatActivity {

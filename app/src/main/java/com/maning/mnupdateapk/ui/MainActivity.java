@@ -1,4 +1,4 @@
-package com.maning.mnupdateapk;
+package com.maning.mnupdateapk.ui;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -23,16 +23,20 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import com.maning.mndialoglibrary.MProgressDialog;
 import com.maning.mndialoglibrary.MToast;
+import com.maning.mnupdateapk.R;
 import com.maning.mnupdateapk.bean.PgyerAppCheckResultBean;
 import com.maning.mnupdateapk.cons.Constants;
-import com.maning.mnupdateapk.utils.PermissionUtils;
 import com.maning.updatelibrary.InstallUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -90,12 +94,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onResponse(String response) {
                         MProgressDialog.dismissProgress();
-                        if(!TextUtils.isEmpty(response)){
+                        if (!TextUtils.isEmpty(response)) {
                             PgyerAppCheckResultBean result = new Gson().fromJson(response, PgyerAppCheckResultBean.class);
                             if (result != null && result.getCode() == 0 && result.getData() != null) {
                                 PgyerAppCheckResultBean.Data data = result.getData();
                                 String downloadURL = data.getDownloadURL();
-                                Log.e("======","downloadURL:"+downloadURL);
+                                Log.e("======", "downloadURL:" + downloadURL);
                                 Constants.APK_URL = downloadURL;
                                 MToast.makeTextShort("获取地址成功");
                                 return;
@@ -107,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onErrorResponse(VolleyError error) {
                 MProgressDialog.dismissProgress();
-                MToast.makeTextShort("错误："+error.getMessage());
+                MToast.makeTextShort("错误：" + error.getMessage());
             }
-        }){
+        }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
@@ -160,44 +164,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 btnDownload.setClickable(true);
                 btnDownload.setBackgroundResource(R.color.colorPrimary);
 
-                //先判断有没有安装权限
-                InstallUtils.checkInstallPermission(context, new InstallUtils.InstallPermissionCallBack() {
-                    @Override
-                    public void onGranted() {
-                        //去安装APK
-                        installApk(apkDownloadPath);
-                    }
-
-                    @Override
-                    public void onDenied() {
-                        //弹出弹框提醒用户
-                        AlertDialog alertDialog = new AlertDialog.Builder(context)
-                                .setTitle("温馨提示")
-                                .setMessage("必须授权才能安装APK，请设置允许安装")
-                                .setNegativeButton("取消", null)
-                                .setPositiveButton("设置", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //打开设置页面
-                                        InstallUtils.openInstallPermissionSetting(context, new InstallUtils.InstallPermissionCallBack() {
-                                            @Override
-                                            public void onGranted() {
-                                                //去安装APK
-                                                installApk(apkDownloadPath);
-                                            }
-
-                                            @Override
-                                            public void onDenied() {
-                                                //还是不允许咋搞？
-                                                Toast.makeText(context, "不允许安装咋搞？强制更新就退出应用程序吧！", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
-                                })
-                                .create();
-                        alertDialog.show();
-                    }
-                });
+                //去安装APK,必须外层保证有安装权限
+                installApk(apkDownloadPath);
             }
 
             @Override
@@ -255,32 +223,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, OtherActivity.class));
                 break;
             case R.id.btnDownloadBrowser:
-                if(TextUtils.isEmpty(Constants.APK_URL)){
-                    Toast.makeText(context,"请先获取最新的下载地址",Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(Constants.APK_URL)) {
+                    Toast.makeText(context, "请先获取最新的下载地址", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 //通过浏览器去下载APK
                 InstallUtils.installAPKWithBrower(this, Constants.APK_URL);
                 break;
             case R.id.btnDownload:
-                if(TextUtils.isEmpty(Constants.APK_URL)){
-                    Toast.makeText(context,"请先获取最新的下载地址",Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(Constants.APK_URL)) {
+                    Toast.makeText(context, "请先获取最新的下载地址", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                //申请SD卡权限
-                if (!PermissionUtils.isGrantSDCardReadPermission(this)) {
-                    PermissionUtils.requestSDCardReadPermission(this, 100);
-                } else {
-                    InstallUtils.with(this)
-                            //必须-下载地址
-                            .setApkUrl(Constants.APK_URL)
-//                            //非必须-下载保存的文件的完整路径+name.apk
-//                            .setApkPath(Constants.APK_SAVE_PATH)
-                            //非必须-下载回调
-                            .setCallBack(downloadCallBack)
-                            //开始下载
-                            .startDownload();
-                }
+                XXPermissions.with(MainActivity.this)
+                        // 不适配 Android 11 可以这样写
+                        //.permission(Permission.Group.STORAGE)
+                        // 适配 Android 11 需要这样写，这里无需再写 Permission.Group.STORAGE
+                        .permission(Permission.MANAGE_EXTERNAL_STORAGE)
+                        .request(new OnPermissionCallback() {
+
+                            @Override
+                            public void onGranted(List<String> permissions, boolean all) {
+                                if (all) {
+                                    checkInstallPermission();
+                                }
+                            }
+                        });
                 break;
             case R.id.getDownloadUrl:
                 getAppUpdateInfo();
@@ -288,6 +256,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 break;
         }
+    }
+
+    private void checkInstallPermission() {
+        //先判断有没有安装权限
+        InstallUtils.checkInstallPermission(context, new InstallUtils.InstallPermissionCallBack() {
+            @Override
+            public void onGranted() {
+                //下载
+                downloadApk();
+            }
+
+            @Override
+            public void onDenied() {
+                //弹出弹框提醒用户
+                AlertDialog alertDialog = new AlertDialog.Builder(context)
+                        .setTitle("温馨提示")
+                        .setMessage("必须授权才能安装APK，请设置允许安装")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("设置", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //打开设置页面
+                                InstallUtils.openInstallPermissionSetting(context, new InstallUtils.InstallPermissionCallBack() {
+                                    @Override
+                                    public void onGranted() {
+                                        //下载
+                                        downloadApk();
+                                    }
+
+                                    @Override
+                                    public void onDenied() {
+                                        //还是不允许咋搞？
+                                        Toast.makeText(context, "不允许安装咋搞？强制更新就退出应用程序吧！", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        })
+                        .create();
+                alertDialog.show();
+            }
+        });
+    }
+
+    private void downloadApk(){
+        InstallUtils.with(MainActivity.this)
+                //必须-下载地址
+                .setApkUrl(Constants.APK_URL)
+                //非必须-下载保存的文件的完整路径+name.apk
+                //.setApkPath(Constants.APK_SAVE_PATH)
+                //非必须-下载回调
+                .setCallBack(downloadCallBack)
+                //开始下载
+                .startDownload();
     }
 
     @Override
