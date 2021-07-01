@@ -1,9 +1,11 @@
 *.iml
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
+/.idea/
 .DS_Store
 /build
 /captures
-
+.externalNativeBuild
+.cxx
+#忽略加固的缓存
+/reinforce
